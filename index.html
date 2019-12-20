@@ -12,6 +12,7 @@
     <script src="js/external/three.min.js"></script>
     <script src="js/external/GPUComputationRenderer.min.js"></script>
     <script src="js/reaction-diffusion-fragment.js"></script>
+    <script src="js/render-shaders.js"></script>
     <script>
       var width = 1024;
       var height = 1024;
@@ -24,7 +25,12 @@
       document.body.appendChild(renderer.domElement);
 
       var geometry = new THREE.PlaneGeometry(1, 1, 1, 1);
-      var material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
+      var material = new THREE.ShaderMaterial
+      ({ 
+        vertexShader: render_vertex,
+        fragmentShader: render_fragment,
+        uniforms: { "reaction_diffusion": { value: null }}
+      });
       var plane = new THREE.Mesh( geometry, material );
       scene.add(plane);
 
@@ -48,31 +54,26 @@
         console.error(error);
       }
 
-      var clock = new THREE.Clock();
-      var delta = 0;
-      var frames = 0;
+      setInterval( () => { gpu_compute.compute(); }, 1 );
 
       function animate() 
       {
         requestAnimationFrame(animate);
         render();
         renderer.render(scene, camera);
-
-        delta += clock.getDelta();
       }
 
       animate();
       
       function render()
       {
-        gpu_compute.compute();
-        material.map = gpu_compute.getCurrentRenderTarget(reaction_diffusion_variable).texture;
+        material.uniforms["reaction_diffusion"].value = gpu_compute.getCurrentRenderTarget(reaction_diffusion_variable).texture;
       }
 
       function setInitialState(texture) 
       {
         var min_radius = 4;
-        var max_radius = 4;
+        var max_radius = 64;
         var points = new Array(64);
 
         for (var i = 0; i < points.length; i++) 
