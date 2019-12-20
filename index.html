@@ -9,45 +9,10 @@
     </style>
   </head>
   <body>
-    <script src="js/three.min.js"></script>
-    <script src="js/GPUComputationRenderer.min.js"></script>
+    <script src="js/external/three.min.js"></script>
+    <script src="js/external/GPUComputationRenderer.min.js"></script>
+    <script src="js/reaction-diffusion-fragment.js"></script>
     <script>
-
-      var reaction_diffusion_fragment =
-        `
-        const float Da = 0.3;
-        const float Db = 0.19;
-        const float Dt = 3.5;
-        const float F  = 0.037;
-        const float K  = 0.06;
-
-        vec2 s(float x_offset, float y_offset)
-        {
-          return texture2D(reaction_diffusion, (gl_FragCoord.xy + vec2(x_offset, y_offset)) / resolution).xy;
-        }
-
-        void main() 
-        {
-          vec2 v00 = s(-1., 1.); vec2 v10 = s(0., 1.); vec2 v20 = s(1., 1.);
-          vec2 v01 = s(-1., 0.); vec2 v11 = s(0., 0.); vec2 v21 = s(1., 0.);
-          vec2 v02 = s(-1.,-1.); vec2 v12 = s(0.,-1.); vec2 v22 = s(1.,-1.);
-
-          float A = v11.x;
-          float B = v11.y;
-
-          vec2 laplace = 0.05 * (v00 + v20 + v02 + v22) + 0.2 * (v10 + v01 + v21 + v12) - v11;
-
-          float laplace_A = laplace.x;
-          float laplace_B = laplace.y;
-
-          float ABB = A * B * B;
-
-          float A_new = A + (Da * laplace_A - ABB + F * (1. - A))*Dt;
-          float B_new = B + (Db * laplace_B + ABB - B * (K  + F))*Dt;
-
-          gl_FragColor = vec4(A_new, B_new, 0.5, 1.0);
-        }`;
-
       var width = 1024;
       var height = 1024;
       var scene = new THREE.Scene();
@@ -66,7 +31,7 @@
       var gpu_compute = new THREE.GPUComputationRenderer(width, height, renderer);
       var reaction_diffusion = gpu_compute.createTexture();
 
-      fillTexture(reaction_diffusion);
+      setInitialState(reaction_diffusion);
 
       var reaction_diffusion_variable = gpu_compute.addVariable("reaction_diffusion", reaction_diffusion_fragment, reaction_diffusion);
 
@@ -83,44 +48,64 @@
         console.error(error);
       }
 
+      var clock = new THREE.Clock();
+      var delta = 0;
+      var frames = 0;
+
       function animate() 
       {
         requestAnimationFrame(animate);
         render();
         renderer.render(scene, camera);
+
+        delta += clock.getDelta();
       }
 
       animate();
-
+      
       function render()
       {
         gpu_compute.compute();
         material.map = gpu_compute.getCurrentRenderTarget(reaction_diffusion_variable).texture;
       }
 
-      function fillTexture(texture) 
+      function setInitialState(texture) 
       {
+        var min_radius = 4;
+        var max_radius = 4;
+        var points = new Array(64);
+
+        for (var i = 0; i < points.length; i++) 
+        {
+          var radius = min_radius + Math.random() * (max_radius - min_radius);
+          points[i] = [Math.random() * width, Math.random() * height, radius];
+        }
+
+        function distance(p1, p2)
+        {
+          return Math.sqrt(Math.pow(p2[0] - p1[0], 2) + Math.pow(p2[1] - p1[1], 2));
+        }
+
         var pixels = texture.image.data;
         var p = 0;
         for (var x = 0; x < width; x++ ) 
         {
           for (var y = 0; y < height; y++)
           {
-            var center_dist = Math.sqrt(Math.pow(x - width/2, 2) + Math.pow(y - height/2, 2));
-            if(center_dist < Math.min(height, width) * 0.1)
+            pixels[p + 0] = 1;
+            pixels[p + 1] = 0;
+            pixels[p + 2] = 0;
+            pixels[p + 3] = 1;
+
+            for (var i = 0; i < points.length; i++)
             {
-              pixels[ p + 0 ] = Math.random() > 0.1;
-              pixels[ p + 1 ] = 0;
-              pixels[ p + 2 ] = 0.5;
-              pixels[ p + 3 ] = 1;
+              var dist = distance([x,y], points[i]);
+              if(dist < points[i][2])
+              {
+                pixels[p + 1] = 1;
+              }
             }
-            else
-            {
-              pixels[ p + 0 ] = 0;
-              pixels[ p + 1 ] = Math.random() > 0.1;
-              pixels[ p + 2 ] = 0.5;
-              pixels[ p + 3 ] = 1;
-            }
+
             p += 4;
           }
         }
