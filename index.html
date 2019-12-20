@@ -74,7 +74,7 @@
       {
         var min_radius = 4;
         var max_radius = 64;
-        var points = new Array(64);
+        var points = new Array(16);
 
         for (var i = 0; i < points.length; i++) 
         {
@@ -103,7 +103,7 @@
               var dist = distance([x,y], points[i]);
               if(dist < points[i][2])
               {
-                pixels[p + 1] = 1;
+                pixels[p + 1] = Math.random() > 0.95;
               }
             }
 

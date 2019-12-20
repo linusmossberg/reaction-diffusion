@@ -1,11 +1,13 @@
 var reaction_diffusion_fragment = `
 
-const float scale = 0.5;
+const float scale = 2.0;
 const float Da = 1.0 * scale;
 const float Db = 0.5 * scale;
-const float Dt = 0.6 / scale;
+const float Dt = 1.0 / scale;
 const float F  = 0.0545;
 const float K  = 0.062;
+//const float F = 0.0367;
+//const float K = 0.0649;
 
 vec2 s(float x_offset, float y_offset)
 {
