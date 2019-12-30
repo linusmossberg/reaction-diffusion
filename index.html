@@ -11,16 +11,17 @@
   <body>
     <script src="js/external/three.min.js"></script>
     <script src="js/external/GPUComputationRenderer.min.js"></script>
+    <script src="js/external/SimplexNoise.js"></script>
     <script src="js/reaction-diffusion-fragment.js"></script>
     <script src="js/render-shaders.js"></script>
     <script>
-      var width = 1024;
-      var height = 1024;
+      var width = 512;
+      var height = 512;
       var scene = new THREE.Scene();
-      var camera = new THREE.PerspectiveCamera(12, window.innerWidth / window.innerHeight, 0.1, 1000);
+      var camera = new THREE.PerspectiveCamera(16, window.innerWidth / window.innerHeight, 0.1, 1000);
       camera.position.z = 5;
 
-      var renderer = new THREE.WebGLRenderer();
+      var renderer = new THREE.WebGLRenderer({precision: "highp"});
       renderer.setSize(window.innerWidth, window.innerHeight);
       document.body.appendChild(renderer.domElement);
 
@@ -29,7 +30,10 @@
       ({ 
         vertexShader: render_vertex,
         fragmentShader: render_fragment,
-        uniforms: { "reaction_diffusion": { value: null }}
+        uniforms: { 
+          "reaction_diffusion": { value: null }, 
+          "color_map": { value: createColorMap() }
+        }
       });
       var plane = new THREE.Mesh( geometry, material );
       scene.add(plane);
@@ -39,7 +43,11 @@
 
       setInitialState(reaction_diffusion);
 
-      var reaction_diffusion_variable = gpu_compute.addVariable("reaction_diffusion", reaction_diffusion_fragment, reaction_diffusion);
+      var reaction_diffusion_variable = gpu_compute.addVariable(
+        "reaction_diffusion", 
+        reaction_diffusion_fragment,
+        reaction_diffusion
+        );
 
       gpu_compute.setVariableDependencies(reaction_diffusion_variable, [reaction_diffusion_variable]);
 
@@ -48,39 +56,43 @@
       reaction_diffusion_variable.wrapS = THREE.RepeatWrapping;
       reaction_diffusion_variable.wrapT = THREE.RepeatWrapping;
 
-      var error = gpu_compute.init();
-      if ( error !== null ) 
-      {
-        console.error(error);
-      }
-
-      setInterval( () => { gpu_compute.compute(); }, 1 );
+      gpu_compute.init();
 
       function animate() 
       {
         requestAnimationFrame(animate);
         render();
-        renderer.render(scene, camera);
       }
 
       animate();
       
       function render()
       {
+        simulateReactionDiffusion(8);
         material.uniforms["reaction_diffusion"].value = gpu_compute.getCurrentRenderTarget(reaction_diffusion_variable).texture;
+        renderer.render(scene, camera);
+      }
+
+      function simulateReactionDiffusion(iterations)
+      {
+        for(var i = 0; i < iterations; i++)
+        {
+          gpu_compute.compute();
+        }
       }
 
       function setInitialState(texture) 
       {
-        var min_radius = 4;
-        var max_radius = 64;
-        var points = new Array(16);
-
+        var min_radius = 3;
+        var max_radius = 16;
+        var points = new Array(1);
         for (var i = 0; i < points.length; i++) 
         {
           var radius = min_radius + Math.random() * (max_radius - min_radius);
           points[i] = [Math.random() * width, Math.random() * height, radius];
         }
+
+        points[0] = [width / 2, height / 2, 16];
 
         function distance(p1, p2)
         {
@@ -93,7 +105,7 @@
         {
           for (var y = 0; y < height; y++)
           {
-            pixels[p + 0] = 1;
+            pixels[p + 0] = 0.5;
             pixels[p + 1] = 0;
             pixels[p + 2] = 0;
             pixels[p + 3] = 1;
@@ -103,13 +115,34 @@
               var dist = distance([x,y], points[i]);
               if(dist < points[i][2])
               {
-                pixels[p + 1] = Math.random() > 0.95;
+                pixels[p + 1] = Math.random() * 0.5;
               }
             }
 
             p += 4;
           }
         }
+      }
+
+      function createColorMap()
+      {
+        var data = new Uint8Array([
+          255,255,229,
+          255,247,188,
+          254,227,145,
+          254,196,79,
+          254,153,41,
+          236,112,20,
+          204,76,2,
+          153,52,4,
+          102,37,6
+        ]);
+
+        var color_map = new THREE.DataTexture(data, data.length / 3, 1, THREE.RGBFormat);
+        color_map.magFilter = THREE.LinearFilter;
+        color_map.minFilter = THREE.LinearFilter;
+
+        return color_map;
       }
 
     </script>
