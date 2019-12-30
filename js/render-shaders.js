@@ -20,7 +20,9 @@ var render_fragment = `
 
   void main() 
   {
-    float v = texture2D(reaction_diffusion, texcoord).g * 2.0;
+    float v = texture2D(reaction_diffusion, texcoord).g;
+    v *= 2.1;
+    v = pow(v, 2.0);
     gl_FragColor = texture2D(color_map, vec2(v, 0.));
   }
 

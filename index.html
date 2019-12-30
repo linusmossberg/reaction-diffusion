@@ -18,7 +18,7 @@
       var width = 512;
       var height = 512;
       var scene = new THREE.Scene();
-      var camera = new THREE.PerspectiveCamera(16, window.innerWidth / window.innerHeight, 0.1, 1000);
+      var camera = new THREE.PerspectiveCamera(12, window.innerWidth / window.innerHeight, 0.1, 1000);
       camera.position.z = 5;
 
       var renderer = new THREE.WebGLRenderer({precision: "highp"});
@@ -39,6 +39,7 @@
       scene.add(plane);
 
       var gpu_compute = new THREE.GPUComputationRenderer(width, height, renderer);
+
       var reaction_diffusion = gpu_compute.createTexture();
 
       setInitialState(reaction_diffusion);
@@ -47,11 +48,12 @@
         "reaction_diffusion", 
         reaction_diffusion_fragment,
         reaction_diffusion
-        );
+      );
 
       gpu_compute.setVariableDependencies(reaction_diffusion_variable, [reaction_diffusion_variable]);
 
       reaction_diffusion_variable.material.uniforms['resolution'] = { value: new THREE.Vector2(width, height) };
+      reaction_diffusion_variable.material.uniforms['environment'] = { value: createEnvironment() };
 
       reaction_diffusion_variable.wrapS = THREE.RepeatWrapping;
       reaction_diffusion_variable.wrapT = THREE.RepeatWrapping;
@@ -115,7 +117,7 @@
               var dist = distance([x,y], points[i]);
               if(dist < points[i][2])
               {
-                pixels[p + 1] = Math.random() * 0.5;
+                pixels[p + 1] = 0.5;
               }
             }
 
@@ -127,15 +129,17 @@
       function createColorMap()
       {
         var data = new Uint8Array([
-          255,255,229,
-          255,247,188,
-          254,227,145,
-          254,196,79,
-          254,153,41,
-          236,112,20,
-          204,76,2,
-          153,52,4,
-          102,37,6
+          165,0,38,
+          215,48,39,
+          244,109,67,
+          253,174,97,
+          254,224,144,
+          255,255,191,
+          224,243,248,
+          171,217,233,
+          116,173,209,
+          69,117,180,
+          49,54,149
         ]);
 
         var color_map = new THREE.DataTexture(data, data.length / 3, 1, THREE.RGBFormat);
@@ -143,6 +147,43 @@
         color_map.minFilter = THREE.LinearFilter;
 
         return color_map;
+      }
+
+      function createEnvironment()
+      {
+        let simplex = new THREE.SimplexNoise();
+
+        //let feed  = 0.072;
+        //let kill  = 0.062;
+        //let feed = 0.045;
+        //let kill = 0.06;
+        let feed = 0.042;
+        let kill = 0.06;
+
+        let scale = 2.0;
+
+        let feed_variation = 0.001;
+        let kill_variation = 0.001;
+        let scale_variation = 1.5;
+
+        let noise_scale = 250;
+
+        let pixels = new Float32Array(width * height * 4);
+        let p = 0;
+        for (let x = 0; x < width; x++ ) 
+        {
+          for (let y = 0; y < height; y++)
+          {
+            pixels[p + 0] = feed + feed_variation * simplex.noise3d(x / noise_scale, y / noise_scale, 0);
+            pixels[p + 1] = kill + kill_variation * simplex.noise3d(x / noise_scale, y / noise_scale, 10);
+            pixels[p + 2] = scale + scale_variation * simplex.noise3d(x / noise_scale, y / noise_scale, 20);
+            pixels[p + 3] = Math.PI * (1.0 + simplex.noise3d(x / noise_scale, y / noise_scale, 30));
+            p += 4;
+          }
+        }
+        let texture = new THREE.DataTexture(pixels, width, height, THREE.RGBAFormat, THREE.FloatType);
+
+        return texture;
       }
 
     </script>

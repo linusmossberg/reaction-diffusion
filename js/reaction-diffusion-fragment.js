@@ -1,17 +1,9 @@
 var reaction_diffusion_fragment = `
 
-const float scale = 2.0;
-const vec2 D = vec2(1, 0.5) * scale;
-const float Dt = 1.0/scale;
+uniform sampler2D environment;
 
-// const float F  = 0.072;
-// const float K  = 0.062;
-
-// const float F  = 0.0367;
-// const float K  = 0.0649;
-
-const float F  = 0.045;
-const float K  = 0.06;
+const vec2 D = vec2(1, 0.5);
+const float Dt = 1.0;
 
 // Sampling function with offset around current texel
 vec2 s(float x_offset, float y_offset)
@@ -65,6 +57,13 @@ vec2 anisotropicDiffusion(vec2 dir, float a, vec2 center)
 
 void main() 
 {
+  vec4 env = texture2D(environment, (gl_FragCoord.xy / resolution).xy);
+
+  float feed = env[0];
+  float kill = env[1];
+  float scale = env[2];
+  vec2 direction = vec2(cos(env[3]), sin(env[3]));
+
   // Old substance concentrations
   vec2 old = s(0.0, 0.0);
 
@@ -72,13 +71,14 @@ void main()
   vec2 reaction = vec2(-1.0, 1.0) * old[0] * old[1] * old[1];
 
   // Add some substance 0 and remove some substance 1
-  vec2 dissipation = vec2(F * (1.0 - old[0]), -old[1] * (K + F));      
+  vec2 dissipation = vec2(feed * (1.0 - old[0]), -old[1] * (kill + feed));
 
   // Diffuse substances at different rates specified by D
-  vec2 diffusion = laplace(old) * D;
+  //vec2 diffusion = laplace(old) * (D * scale);
+  vec2 diffusion = anisotropicDiffusion(direction, 0.75, old) * (D * scale);
 
   // New substance concentrations
-  gl_FragColor.xy = old + (reaction + dissipation + diffusion) * Dt;
+  gl_FragColor.xy = old + (reaction + dissipation + diffusion) * (Dt / scale);
 }
 
 `;
