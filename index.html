@@ -52,8 +52,7 @@
 
       gpu_compute.setVariableDependencies(reaction_diffusion_variable, [reaction_diffusion_variable]);
 
-      reaction_diffusion_variable.material.uniforms['resolution'] = { value: new THREE.Vector2(width, height) };
-      reaction_diffusion_variable.material.uniforms['environment'] = { value: createEnvironment() };
+      createEnvironment();
 
       reaction_diffusion_variable.wrapS = THREE.RepeatWrapping;
       reaction_diffusion_variable.wrapT = THREE.RepeatWrapping;
@@ -160,6 +159,9 @@
         let feed = 0.042;
         let kill = 0.06;
 
+        //let feed  = 0.014;
+        //let kill  = 0.04;
+
         let scale = 2.0;
 
         let feed_variation = 0.001;
@@ -177,15 +179,27 @@
             pixels[p + 0] = feed + feed_variation * simplex.noise3d(x / noise_scale, y / noise_scale, 0);
             pixels[p + 1] = kill + kill_variation * simplex.noise3d(x / noise_scale, y / noise_scale, 10);
             pixels[p + 2] = scale + scale_variation * simplex.noise3d(x / noise_scale, y / noise_scale, 20);
-            pixels[p + 3] = Math.PI * (1.0 + simplex.noise3d(x / noise_scale, y / noise_scale, 30));
+            pixels[p + 3] = Math.PI * simplex.noise3d(x / noise_scale, y / noise_scale, 30);
             p += 4;
           }
         }
-        let texture = new THREE.DataTexture(pixels, width, height, THREE.RGBAFormat, THREE.FloatType);
 
-        return texture;
+        reaction_diffusion_variable.material.uniforms['environment'] = { 
+          value: new THREE.DataTexture(pixels, width, height, THREE.RGBAFormat, THREE.FloatType) 
+        };
+
+        reaction_diffusion_variable.material.uniforms.environment.value.magFilter = THREE.LinearFilter;
+        reaction_diffusion_variable.material.uniforms.environment.value.minFilter = THREE.LinearFilter;
       }
 
+    </script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+      ga('create', 'UA-156004912-1', 'auto');
+      ga('send', 'pageview');
     </script>
   </body>
 </html>

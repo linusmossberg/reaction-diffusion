@@ -75,7 +75,7 @@ void main()
 
   // Diffuse substances at different rates specified by D
   //vec2 diffusion = laplace(old) * (D * scale);
-  vec2 diffusion = anisotropicDiffusion(direction, 0.75, old) * (D * scale);
+  vec2 diffusion = anisotropicDiffusion(direction, 0.8, old) * (D * scale);
 
   // New substance concentrations
   gl_FragColor.xy = old + (reaction + dissipation + diffusion) * (Dt / scale);
