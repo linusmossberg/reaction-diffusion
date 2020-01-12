@@ -17,6 +17,10 @@
     <script>
       var width = window.innerWidth;
       var height = window.innerHeight;
+
+      var simulation_width = Math.round(width / 2);
+      var simulation_height = Math.round(height / 2);
+
       var scene = new THREE.Scene();
 
       var camera = new THREE.OrthographicCamera(width / - 2, width / 2, height / 2, height / - 2, 1, 1000);
@@ -39,7 +43,7 @@
       var plane = new THREE.Mesh( geometry, material );
       scene.add(plane);
 
-      var gpu_compute = new THREE.GPUComputationRenderer(width, height, renderer);
+      var gpu_compute = new THREE.GPUComputationRenderer(simulation_width, simulation_height, renderer);
 
       var reaction_diffusion = gpu_compute.createTexture();
 
@@ -94,7 +98,7 @@
           points[i] = [Math.random() * width, Math.random() * height, radius];
         }
 
-        points[0] = [width / 2, height / 2, 16];
+        points[0] = [simulation_width / 2, simulation_height / 2, 16];
 
         function distance(p1, p2)
         {
@@ -103,9 +107,9 @@
 
         var pixels = texture.image.data;
         var p = 0;
-        for (var y = 0; y < height; y++)
+        for (var y = 0; y < simulation_height; y++)
         {
-          for (var x = 0; x < width; x++ )
+          for (var x = 0; x < simulation_width; x++ )
           {
             pixels[p + 0] = 0.5;
             pixels[p + 1] = 0;
@@ -171,11 +175,11 @@
 
         let noise_scale = 250;
 
-        let pixels = new Float32Array(width * height * 4);
+        let pixels = new Float32Array(simulation_width * simulation_height * 4);
         let p = 0;
-        for (let y = 0; y < height; y++)
+        for (let y = 0; y < simulation_height; y++)
         {
-          for (let x = 0; x < width; x++ )
+          for (let x = 0; x < simulation_width; x++ )
           {
             pixels[p + 0] = feed + feed_variation * simplex.noise3d(x / noise_scale, y / noise_scale, 0);
             pixels[p + 1] = kill + kill_variation * simplex.noise3d(x / noise_scale, y / noise_scale, 10);
@@ -186,7 +190,7 @@
         }
 
         reaction_diffusion_variable.material.uniforms['environment'] = { 
-          value: new THREE.DataTexture(pixels, width, height, THREE.RGBAFormat, THREE.FloatType) 
+          value: new THREE.DataTexture(pixels, simulation_width, simulation_height, THREE.RGBAFormat, THREE.FloatType) 
         };
 
         reaction_diffusion_variable.material.uniforms.environment.value.magFilter = THREE.LinearFilter;
