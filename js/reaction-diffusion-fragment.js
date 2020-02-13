@@ -2,6 +2,9 @@ var reaction_diffusion_fragment = `
 
 uniform sampler2D environment;
 
+uniform vec2 mouse_pos;
+uniform bool mouse_down;
+
 const vec2 D = vec2(1, 0.5);
 const float Dt = 1.0;
 
@@ -74,11 +77,23 @@ void main()
   vec2 dissipation = vec2(feed * (1.0 - old[0]), -old[1] * (kill + feed));
 
   // Diffuse substances at different rates specified by D
-  //vec2 diffusion = laplace(old) * (D * scale);
-  vec2 diffusion = anisotropicDiffusion(direction, 0.8, old) * (D * scale);
+  vec2 diffusion = laplace(old) * (D * scale);
+  //vec2 diffusion = anisotropicDiffusion(direction, 0.8, old) * (D * scale);
 
   // New substance concentrations
   gl_FragColor.xy = old + (reaction + dissipation + diffusion) * (Dt / scale);
+
+  
+  if(mouse_down && gl_FragColor.y <= 0.5)
+  {
+    float distance = length(gl_FragCoord.xy - mouse_pos);
+    if(distance <= 5.0)
+    {
+      gl_FragColor.y += (5.0 - distance)/40.0;
+    }
+  }
+
+  //gl_FragColor.xy = clamp(gl_FragColor.xy, 0.0, 1.0);
 }
 
 `;
