@@ -62,7 +62,7 @@
       reaction_diffusion_variable.material.uniforms['mouse_pos'] = { value: new THREE.Vector2(-100, -100) };
       reaction_diffusion_variable.material.uniforms['mouse_down'] = { value: false };
 
-      let onMove = function(event)
+      renderer.domElement.onmousemove = function(event)
       {
         var x = event.clientX * (simulation_width / width);
         var y = simulation_height - event.clientY * (simulation_height / height);
@@ -70,36 +70,53 @@
         reaction_diffusion_variable.material.uniforms['mouse_pos'].value = new THREE.Vector2(x, y);
       }
 
-      let onDown = function(event)
-      {
-        reaction_diffusion_variable.material.uniforms['mouse_down'].value = true;
-      }
-
-      let onUp = function(event)
-      {
-        reaction_diffusion_variable.material.uniforms['mouse_down'].value = false;
-      }
-
-      renderer.domElement.onmousemove = onMove;
-      renderer.domElement.touchmove = onMove;
-
-      renderer.domElement.onmousedown = onDown;
-      renderer.domElement.ontouchstart = onDown;
-
-      renderer.domElement.onmouseup = onUp;
-      renderer.domElement.ontouchend = onUp;
-      renderer.domElement.onmouseleave = onUp;
-      renderer.domElement.touchcancel = onUp;
-
       renderer.domElement.onmousedown = function(event)
       {
         reaction_diffusion_variable.material.uniforms['mouse_down'].value = true;
       }
 
-      renderer.domElement.onmouseup = function(event)
+      var onMouseUp = function(event)
       {
         reaction_diffusion_variable.material.uniforms['mouse_down'].value = false;
       }
+
+      renderer.domElement.onmouseup = onMouseUp;
+      renderer.domElement.onmouseleave = onMouseUp;
+
+      function handleStart(event) 
+      {
+        event.preventDefault();
+        reaction_diffusion_variable.material.uniforms['mouse_down'].value = true;
+      }
+
+      function handleMove(event)
+      {
+        event.preventDefault();
+
+        if(event.touches.length)
+        {
+          var x = event.touches[0].clientX * (simulation_width / width);
+          var y = simulation_height - event.touches[0].clientY * (simulation_height / height);
+
+          reaction_diffusion_variable.material.uniforms['mouse_pos'].value = new THREE.Vector2(x, y);
+        }
+      }
+
+      function handleEnd(event) 
+      {
+        event.preventDefault();
+        reaction_diffusion_variable.material.uniforms['mouse_down'].value = false;
+      }
+
+      function handleCancel(event) {
+        event.preventDefault();
+        reaction_diffusion_variable.material.uniforms['mouse_down'].value = false;
+      }
+
+      renderer.domElement.addEventListener("touchstart", handleStart, false);
+      renderer.domElement.addEventListener("touchend", handleEnd, false);
+      renderer.domElement.addEventListener("touchcancel", handleCancel, false);
+      renderer.domElement.addEventListener("touchmove", handleMove, false);
 
       reaction_diffusion_variable.wrapS = THREE.ClampToEdgeWrapping;
       reaction_diffusion_variable.wrapT = THREE.ClampToEdgeWrapping;
@@ -116,7 +133,7 @@
       
       function render()
       {
-        simulateReactionDiffusion(8);
+        simulateReactionDiffusion(3);
         material.uniforms["reaction_diffusion"].value = gpu_compute.getCurrentRenderTarget(reaction_diffusion_variable).texture;
         renderer.render(scene, camera);
       }
