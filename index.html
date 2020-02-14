@@ -62,13 +62,34 @@
       reaction_diffusion_variable.material.uniforms['mouse_pos'] = { value: new THREE.Vector2(-100, -100) };
       reaction_diffusion_variable.material.uniforms['mouse_down'] = { value: false };
 
-      renderer.domElement.onmousemove = function(event) 
+      let onMove = function(event)
       {
         var x = event.clientX * (simulation_width / width);
         var y = simulation_height - event.clientY * (simulation_height / height);
 
         reaction_diffusion_variable.material.uniforms['mouse_pos'].value = new THREE.Vector2(x, y);
       }
+
+      let onDown = function(event)
+      {
+        reaction_diffusion_variable.material.uniforms['mouse_down'].value = true;
+      }
+
+      let onUp = function(event)
+      {
+        reaction_diffusion_variable.material.uniforms['mouse_down'].value = false;
+      }
+
+      renderer.domElement.onmousemove = onMove;
+      renderer.domElement.touchmove = onMove;
+
+      renderer.domElement.onmousedown = onDown;
+      renderer.domElement.ontouchstart = onDown;
+
+      renderer.domElement.onmouseup = onUp;
+      renderer.domElement.ontouchend = onUp;
+      renderer.domElement.onmouseleave = onUp;
+      renderer.domElement.touchcancel = onUp;
 
       renderer.domElement.onmousedown = function(event)
       {
@@ -110,59 +131,59 @@
 
       function setInitialState(texture) 
       {
-        // var pixels = texture.image.data;
-        // var p = 0;
-        // for (var y = 0; y < simulation_height; y++)
-        // {
-        //   for (var x = 0; x < simulation_width; x++ )
-        //   {
-        //     pixels[p + 0] = 0.5;
-        //     pixels[p + 1] = 0;
-        //     pixels[p + 2] = 0;
-        //     pixels[p + 3] = 1;
-        //     p += 4;
-        //   }
-        // }
-
-        var min_radius = 10;
-        var max_radius = 10;
-        var points = new Array(1);
-        for (var i = 0; i < points.length; i++) 
-        {
-          var radius = min_radius + Math.random() * (max_radius - min_radius);
-          points[i] = [Math.random() * width, Math.random() * height, radius];
-        }
-
-        points[0] = [simulation_width / 2, simulation_height / 2, 16];
-
-        function distance(p1, p2)
-        {
-          return Math.sqrt(Math.pow(p2[0] - p1[0], 2) + Math.pow(p2[1] - p1[1], 2));
-        }
-
         var pixels = texture.image.data;
         var p = 0;
         for (var y = 0; y < simulation_height; y++)
         {
           for (var x = 0; x < simulation_width; x++ )
           {
-            pixels[p + 0] = 0.7;
+            pixels[p + 0] = 0.5;
             pixels[p + 1] = 0;
             pixels[p + 2] = 0;
             pixels[p + 3] = 1;
-
-            for (var i = 0; i < points.length; i++)
-            {
-              var dist = distance([x,y], points[i]);
-              if(dist < points[i][2])
-              {
-                pixels[p + 1] = (points[i][2] - dist)/(points[i][2]*2);
-              }
-            }
-
             p += 4;
           }
         }
+
+        // var min_radius = 10;
+        // var max_radius = 10;
+        // var points = new Array(1);
+        // for (var i = 0; i < points.length; i++) 
+        // {
+        //   var radius = min_radius + Math.random() * (max_radius - min_radius);
+        //   points[i] = [Math.random() * width, Math.random() * height, radius];
+        // }
+
+        // points[0] = [simulation_width / 2, simulation_height / 2, 16];
+
+        // function distance(p1, p2)
+        // {
+        //   return Math.sqrt(Math.pow(p2[0] - p1[0], 2) + Math.pow(p2[1] - p1[1], 2));
+        // }
+
+        // var pixels = texture.image.data;
+        // var p = 0;
+        // for (var y = 0; y < simulation_height; y++)
+        // {
+        //   for (var x = 0; x < simulation_width; x++ )
+        //   {
+        //     pixels[p + 0] = 0.7;
+        //     pixels[p + 1] = 0;
+        //     pixels[p + 2] = 0;
+        //     pixels[p + 3] = 1;
+
+        //     for (var i = 0; i < points.length; i++)
+        //     {
+        //       var dist = distance([x,y], points[i]);
+        //       if(dist < points[i][2])
+        //       {
+        //         pixels[p + 1] = (points[i][2] - dist)/(points[i][2]*2);
+        //       }
+        //     }
+
+        //     p += 4;
+        //   }
+        // }
       }
 
       function createColorMap()
