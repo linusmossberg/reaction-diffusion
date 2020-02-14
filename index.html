@@ -6,9 +6,23 @@
     <style>
       body { margin: 0; }
       canvas { display: block; }
+      #draw {
+        position: absolute;
+        top: 30%;
+        width: 100%;
+        font-size: 10em;
+        text-align: center;
+        z-index: 100;
+        opacity: 0.2;
+        display: block;
+        font-family: "Courier New", Courier, monospace;
+        pointer-events: none;
+      }
+}
     </style>
   </head>
   <body>
+    <div id="draw">DRAW</div>
     <script src="js/external/three.min.js"></script>
     <script src="js/external/GPUComputationRenderer.min.js"></script>
     <script src="js/external/SimplexNoise.js"></script>
@@ -70,9 +84,16 @@
         reaction_diffusion_variable.material.uniforms['mouse_pos'].value = new THREE.Vector2(x, y);
       }
 
+      let draw_text_removed = false;
       renderer.domElement.onmousedown = function(event)
       {
         reaction_diffusion_variable.material.uniforms['mouse_down'].value = true;
+
+        if(!draw_text_removed)
+        {
+          document.getElementById('draw').remove();
+          draw_text_removed = true;
+        }
       }
 
       var onMouseUp = function(event)
@@ -87,6 +108,12 @@
       {
         event.preventDefault();
         reaction_diffusion_variable.material.uniforms['mouse_down'].value = true;
+
+        if(!draw_text_removed)
+        {
+          document.getElementById('draw').remove();
+          draw_text_removed = true;
+        }
       }
 
       function handleMove(event)
