@@ -84,7 +84,7 @@ void main()
   gl_FragColor.xy = old + (reaction + dissipation + diffusion) * (Dt / scale);
 
   
-  if(mouse_down && gl_FragColor.y <= 0.5)
+  if(mouse_down && gl_FragColor.y <= 0.2)
   {
     float distance = length(gl_FragCoord.xy - mouse_pos);
     if(distance <= 7.0)
