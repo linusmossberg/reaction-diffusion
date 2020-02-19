@@ -67,8 +67,8 @@ var render_fragment = `
     float h = height(0.0, 0.0);
 
     vec3 diffuse_color1 = vec3(0.196078, 0.619608, 0.658824);
-    float edge0 = 0.200;
-    float edge1 = 0.250;
+    float edge0 = 0.150;
+    float edge1 = 0.190;
     
     if(h > edge0)
     {

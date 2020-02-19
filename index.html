@@ -110,7 +110,6 @@
       {
         if(event.touches.length == 1)
         {
-          event.preventDefault();
           reaction_diffusion_variable.material.uniforms['mouse_down'].value = true;
 
           if(!draw_text_removed)
@@ -138,7 +137,6 @@
       {
         if(event.touches.length == 0)
         {
-          event.preventDefault();
           reaction_diffusion_variable.material.uniforms['mouse_down'].value = false;
         }
       }
@@ -146,7 +144,6 @@
       function touchCancel(event) {
         if(event.touches.length == 0)
         {
-          event.preventDefault();
           reaction_diffusion_variable.material.uniforms['mouse_down'].value = false;
         }
       }
