@@ -108,13 +108,16 @@
 
       function touchStart(event) 
       {
-        event.preventDefault();
-        reaction_diffusion_variable.material.uniforms['mouse_down'].value = true;
-
-        if(!draw_text_removed)
+        if(event.touches.length == 1)
         {
-          document.getElementById('draw').remove();
-          draw_text_removed = true;
+          event.preventDefault();
+          reaction_diffusion_variable.material.uniforms['mouse_down'].value = true;
+
+          if(!draw_text_removed)
+          {
+            document.getElementById('draw').remove();
+            draw_text_removed = true;
+          }
         }
       }
 
