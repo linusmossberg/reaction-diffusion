@@ -82,7 +82,6 @@ void main()
 
   // New substance concentrations
   gl_FragColor.xy = old + (reaction + dissipation + diffusion) * (Dt / scale);
-
   
   if(mouse_down && gl_FragColor.y <= 0.2)
   {
