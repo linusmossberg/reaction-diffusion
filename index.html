@@ -18,7 +18,6 @@
         font-family: "Courier New", Courier, monospace;
         pointer-events: none;
       }
-}
     </style>
   </head>
   <body>
@@ -44,6 +43,7 @@
       renderer.setSize(width, height);
       document.body.appendChild(renderer.domElement);
 
+      var clock = new THREE.Clock;
       var geometry = new THREE.PlaneGeometry(width, height, 1, 1);
       var material = new THREE.ShaderMaterial
       ({ 
@@ -52,6 +52,8 @@
         uniforms: { 
           "reaction_diffusion": { value: null }, 
           "color_map": { value: createColorMap() },
+          "resolution": { value: new THREE.Vector2(width, height) },
+          "time": { value: clock.getElapsedTime() }
         }
       });
       var plane = new THREE.Mesh( geometry, material );
@@ -162,6 +164,7 @@
       {
         simulateReactionDiffusion(3);
         material.uniforms["reaction_diffusion"].value = gpu_compute.getCurrentRenderTarget(reaction_diffusion_variable).texture;
+        material.uniforms["time"].value = clock.getElapsedTime();
         renderer.render(scene, camera);
       }
 
@@ -232,27 +235,30 @@
 
       function createColorMap()
       {
-        // var data = new Uint8Array([
-        //   165,0,38,
-        //   215,48,39,
-        //   244,109,67,
-        //   253,174,97,
-        //   254,224,144,
-        //   255,255,191,
-        //   224,243,248,
-        //   171,217,233,
-        //   116,173,209,
-        //   69,117,180,
-        //   49,54,149
-        // ]);
-
         var data = new Uint8Array([
-          255,255,255,
-          0,0,0,
-          0,0,0,
-          0,0,0,
-          0,0,0
+          165,0,38,
+          215,48,39,
+          244,109,67,
+          253,174,97,
+          254,224,144,
+          255,255,191,
+          255,255,191,
+          255,255,191,
+          255,255,191
+          // 224,243,248,
+          // 171,217,233,
+          // 116,173,209,
+          // 69,117,180,
+          // 49,54,149
         ]);
+
+        // var data = new Uint8Array([
+        //   255,255,255,
+        //   0,0,0,
+        //   0,0,0,
+        //   0,0,0,
+        //   0,0,0
+        // ]);
 
         var color_map = new THREE.DataTexture(data, data.length / 3, 1, THREE.RGBFormat);
         color_map.magFilter = THREE.LinearFilter;

@@ -87,9 +87,9 @@ void main()
   if(mouse_down && gl_FragColor.y <= 0.5)
   {
     float distance = length(gl_FragCoord.xy - mouse_pos);
-    if(distance <= 5.0)
+    if(distance <= 7.0)
     {
-      gl_FragColor.y += (5.0 - distance)/40.0;
+      gl_FragColor.y += (7.0 - distance)/56.0;
     }
   }
 
