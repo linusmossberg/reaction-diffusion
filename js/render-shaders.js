@@ -58,7 +58,7 @@ var render_fragment = `
     //vec3 light_dir = normalize(vec3(-0.5, -0.5, 10.0));
 
     vec3 view_dir = vec3(0.0,0.0,-1.0);
-    vec3 reflect_dir = reflect(-light_dir, normal);
+    vec3 reflect_dir = reflect(light_dir, normal);
 
     vec3 light_color = vec3(1.0,1.0,1.0);
     //vec3 diffuse_color = texture2D(color_map, vec2(height(0.0, 0.0), 0.0)).rgb;
@@ -83,11 +83,11 @@ var render_fragment = `
     }
 
     //vec3 diffuse_color = vec3(0.8, 0.8, 0.8);
-    vec3 specular_color = vec3(0.6,0.6,0.6);
+    vec3 specular_color = vec3(0.4,0.4,0.4);
 
     vec3 ambient = light_color * 0.1;
     vec3 diffuse = light_color * max(dot(normal, light_dir), 0.0) * diffuse_color;
-    vec3 specular = light_color * pow(max(dot(view_dir, reflect_dir), 0.0), 8.0) * specular_color;
+    vec3 specular = light_color * pow(max(dot(view_dir, reflect_dir), 0.0), 64.0) * specular_color;
 
     gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
   }

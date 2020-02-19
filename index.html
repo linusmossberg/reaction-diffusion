@@ -168,7 +168,7 @@
       
       function render()
       {
-        simulateReactionDiffusion(3);
+        simulateReactionDiffusion(4);
         material.uniforms["reaction_diffusion"].value = gpu_compute.getCurrentRenderTarget(reaction_diffusion_variable).texture;
         material.uniforms["time"].value = clock.getElapsedTime();
         renderer.render(scene, camera);
