@@ -106,7 +106,7 @@
       renderer.domElement.onmouseup = onMouseUp;
       renderer.domElement.onmouseleave = onMouseUp;
 
-      function handleStart(event) 
+      function touchStart(event) 
       {
         event.preventDefault();
         reaction_diffusion_variable.material.uniforms['mouse_down'].value = true;
@@ -118,12 +118,12 @@
         }
       }
 
-      function handleMove(event)
+      function touchMove(event)
       {
-        event.preventDefault();
-
-        if(event.touches.length)
+        if(event.touches.length == 1)
         {
+          event.preventDefault();
+
           var x = event.touches[0].clientX * (simulation_width / width);
           var y = simulation_height - event.touches[0].clientY * (simulation_height / height);
 
@@ -131,21 +131,27 @@
         }
       }
 
-      function handleEnd(event) 
+      function touchEnd(event) 
       {
-        event.preventDefault();
-        reaction_diffusion_variable.material.uniforms['mouse_down'].value = false;
+        if(event.touches.length == 0)
+        {
+          event.preventDefault();
+          reaction_diffusion_variable.material.uniforms['mouse_down'].value = false;
+        }
       }
 
-      function handleCancel(event) {
-        event.preventDefault();
-        reaction_diffusion_variable.material.uniforms['mouse_down'].value = false;
+      function touchCancel(event) {
+        if(event.touches.length == 0)
+        {
+          event.preventDefault();
+          reaction_diffusion_variable.material.uniforms['mouse_down'].value = false;
+        }
       }
 
-      renderer.domElement.addEventListener("touchstart", handleStart, false);
-      renderer.domElement.addEventListener("touchend", handleEnd, false);
-      renderer.domElement.addEventListener("touchcancel", handleCancel, false);
-      renderer.domElement.addEventListener("touchmove", handleMove, false);
+      renderer.domElement.addEventListener("touchstart", touchStart, false);
+      renderer.domElement.addEventListener("touchend", touchEnd, false);
+      renderer.domElement.addEventListener("touchcancel", touchCancel, false);
+      renderer.domElement.addEventListener("touchmove", touchMove, false);
 
       reaction_diffusion_variable.wrapS = THREE.ClampToEdgeWrapping;
       reaction_diffusion_variable.wrapT = THREE.ClampToEdgeWrapping;

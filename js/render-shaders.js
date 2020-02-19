@@ -49,11 +49,11 @@ var render_fragment = `
 
     vec3 light_pos = vec3(1.0, 1.0, 2.0);
     //vec3 light_pos = vec3((1 + cos(time)) / 2, (1 + sin(time)) / 2, 2)
-    //vec3 light_dir = normalize(light_pos - vec3(0.5, 0.5, 0.0));
+    vec3 light_dir = normalize(light_pos - vec3(0.5, 0.5, 0.0));
     //vec3 light_pos = vec3(0.0, 0.0, 1.0);
 
     //vec3 light_pos = vec3((1.0 + cos(time * 0.2)) / 2.0, (1.0 + sin(time * 0.2)) / 2.0, 5.0);
-    vec3 light_dir = normalize(light_pos - vec3(texcoord * resolution / resolution.x, 0.0));
+    //vec3 light_dir = normalize(light_pos - vec3(texcoord * resolution / 1000.0, 0.0));
 
     //vec3 light_dir = normalize(vec3(-0.5, -0.5, 10.0));
 
@@ -64,11 +64,12 @@ var render_fragment = `
     //vec3 diffuse_color = texture2D(color_map, vec2(height(0.0, 0.0), 0.0)).rgb;
     vec3 diffuse_color = vec3(1.0, 1.0, 1.0);
 
-    vec3 diffuse_color1 = vec3(0.196078, 0.619608, 0.658824);
-    float edge0 = 0.210;
-    float edge1 = 0.250;
-
     float h = height(0.0, 0.0);
+
+    vec3 diffuse_color1 = vec3(0.196078, 0.619608, 0.658824);
+    float edge0 = 0.200;
+    float edge1 = 0.250;
+    
     if(h > edge0)
     {
       if(h < edge1)
@@ -86,7 +87,7 @@ var render_fragment = `
 
     vec3 ambient = light_color * 0.1;
     vec3 diffuse = light_color * max(dot(normal, light_dir), 0.0) * diffuse_color;
-    vec3 specular = light_color * pow(max(dot(view_dir, reflect_dir), 0.0), 16.0) * specular_color;
+    vec3 specular = light_color * pow(max(dot(view_dir, reflect_dir), 0.0), 8.0) * specular_color;
 
     gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
   }
