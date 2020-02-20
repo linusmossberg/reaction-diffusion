@@ -18,10 +18,19 @@
         font-family: "Courier New", Courier, monospace;
         pointer-events: none;
       }
+      #light {
+        position: absolute;
+        z-index: 101;
+        opacity: 0.0;
+        display: block;
+        pointer-events: none;
+        cursor: move;
+      }
     </style>
   </head>
   <body>
     <div id="draw">DRAW</div>
+    <img id="light" src="data/day-sunny.svg" height="50px" width="50px" />
     <script src="js/external/three.min.js"></script>
     <script src="js/external/GPUComputationRenderer.min.js"></script>
     <script src="js/external/SimplexNoise.js"></script>
@@ -43,6 +52,11 @@
       renderer.setSize(width, height);
       document.body.appendChild(renderer.domElement);
 
+      var light_pos = new THREE.Vector2(width/4, height/4);
+      var mouse_down = false;
+      var light_move = false;
+      var brush_move = false;
+
       var clock = new THREE.Clock;
       var geometry = new THREE.PlaneGeometry(width, height, 1, 1);
       var material = new THREE.ShaderMaterial
@@ -51,8 +65,9 @@
         fragmentShader: render_fragment,
         uniforms: { 
           "reaction_diffusion": { value: null }, 
-          "resolution": { value: new THREE.Vector2(simulation_width, simulation_height) },
-          "time": { value: clock.getElapsedTime() }
+          "resolution": { value: new THREE.Vector2(width, height) },
+          "time": { value: clock.getElapsedTime() },
+          "light_pos": { value: new THREE.Vector3(light_pos.x, light_pos.y, 600) }
         }
       });
       var plane = new THREE.Mesh( geometry, material );
@@ -77,21 +92,48 @@
       reaction_diffusion_variable.material.uniforms['mouse_pos'] = { value: new THREE.Vector2(-100, -100) };
       reaction_diffusion_variable.material.uniforms['mouse_down'] = { value: false };
 
-      renderer.domElement.onmousemove = function(event)
+      var light_element = document.getElementById('light');
+      updateLightPosition(light_pos);
+
+      function move(clientX, clientY)
       {
-        var x = event.clientX * (simulation_width / width);
-        var y = simulation_height - event.clientY * (simulation_height / height);
+        var x = clientX * (simulation_width / width);
+        var y = simulation_height - clientY * (simulation_height / height);
 
         reaction_diffusion_variable.material.uniforms['mouse_pos'].value = new THREE.Vector2(x, y);
+
+        if(mouse_down)
+        {
+          var mouse_pos = new THREE.Vector2(clientX, height - clientY);
+          if(light_move || mouse_pos.distanceTo(light_pos) < 25)
+          {
+            light_move = true;
+            brush_move = false;
+            updateLightPosition(mouse_pos);
+            material.uniforms["light_pos"].value = new THREE.Vector3(mouse_pos.x, mouse_pos.y, 600);
+          }
+          else
+          {
+            brush_move = true;
+            light_move = false;
+          }
+        }
+        reaction_diffusion_variable.material.uniforms['mouse_down'].value = brush_move;
+      }
+
+      renderer.domElement.onmousemove = function(event)
+      {
+        move(event.clientX, event.clientY);
       }
 
       let draw_text_removed = false;
       renderer.domElement.onmousedown = function(event)
       {
-        reaction_diffusion_variable.material.uniforms['mouse_down'].value = true;
+        mouse_down = true;
 
         if(!draw_text_removed)
         {
+          light_element.style.opacity = 0.6;
           document.getElementById('draw').remove();
           draw_text_removed = true;
         }
@@ -99,7 +141,7 @@
 
       var onMouseUp = function(event)
       {
-        reaction_diffusion_variable.material.uniforms['mouse_down'].value = false;
+        mouse_down = light_move = brush_move = false;
       }
 
       renderer.domElement.onmouseup = onMouseUp;
@@ -109,10 +151,11 @@
       {
         if(event.touches.length == 1)
         {
-          reaction_diffusion_variable.material.uniforms['mouse_down'].value = true;
+          mouse_down = true;
 
           if(!draw_text_removed)
           {
+            light_element.style.opacity = 0.6;
             document.getElementById('draw').remove();
             draw_text_removed = true;
           }
@@ -124,11 +167,7 @@
         if(event.touches.length == 1)
         {
           event.preventDefault();
-
-          var x = event.touches[0].clientX * (simulation_width / width);
-          var y = simulation_height - event.touches[0].clientY * (simulation_height / height);
-
-          reaction_diffusion_variable.material.uniforms['mouse_pos'].value = new THREE.Vector2(x, y);
+          move(event.touches[0].clientX, event.touches[0].clientY);
         }
       }
 
@@ -136,14 +175,14 @@
       {
         if(event.touches.length == 0)
         {
-          reaction_diffusion_variable.material.uniforms['mouse_down'].value = false;
+          mouse_down = light_move = brush_move = false;
         }
       }
 
       function touchCancel(event) {
         if(event.touches.length == 0)
         {
-          reaction_diffusion_variable.material.uniforms['mouse_down'].value = false;
+          mouse_down = light_move = brush_move = false;
         }
       }
 
@@ -167,9 +206,13 @@
       
       function render()
       {
+        var time = clock.getElapsedTime();
+
         simulateReactionDiffusion(4);
         material.uniforms["reaction_diffusion"].value = gpu_compute.getCurrentRenderTarget(reaction_diffusion_variable).texture;
-        material.uniforms["time"].value = clock.getElapsedTime();
+        material.uniforms["time"].value = time;
+        //material.uniforms["light_pos"].value = new THREE.Vector3((0.5 + 0.25 * Math.cos(0.5*time)) * width, (0.5 + 0.25 * Math.sin(0.5*time)) * height, 600);
+
         renderer.render(scene, camera);
       }
 
@@ -195,6 +238,20 @@
             pixels[p + 3] = 1;
             p += 4;
           }
+        }
+      }
+
+      function updateLightPosition(pos)
+      {
+        var half_width = light_element.clientWidth / 2;
+        var half_height = light_element.clientHeight / 2;
+
+        if(pos.x - half_width > 0 && pos.x + half_width < width && 
+           pos.y - half_height > 0 && pos.y + half_height < height)
+        {
+          light_pos = pos;
+          light_element.style.top = height - pos.y - half_height + "px";
+          light_element.style.left = pos.x - half_width + "px";
         }
       }
 
