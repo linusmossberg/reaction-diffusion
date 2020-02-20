@@ -51,8 +51,7 @@
         fragmentShader: render_fragment,
         uniforms: { 
           "reaction_diffusion": { value: null }, 
-          "color_map": { value: createColorMap() },
-          "resolution": { value: new THREE.Vector2(width, height) },
+          "resolution": { value: new THREE.Vector2(simulation_width, simulation_height) },
           "time": { value: clock.getElapsedTime() }
         }
       });
@@ -197,76 +196,6 @@
             p += 4;
           }
         }
-
-        // var min_radius = 10;
-        // var max_radius = 10;
-        // var points = new Array(1);
-        // for (var i = 0; i < points.length; i++) 
-        // {
-        //   var radius = min_radius + Math.random() * (max_radius - min_radius);
-        //   points[i] = [Math.random() * width, Math.random() * height, radius];
-        // }
-
-        // points[0] = [simulation_width / 2, simulation_height / 2, 16];
-
-        // function distance(p1, p2)
-        // {
-        //   return Math.sqrt(Math.pow(p2[0] - p1[0], 2) + Math.pow(p2[1] - p1[1], 2));
-        // }
-
-        // var pixels = texture.image.data;
-        // var p = 0;
-        // for (var y = 0; y < simulation_height; y++)
-        // {
-        //   for (var x = 0; x < simulation_width; x++ )
-        //   {
-        //     pixels[p + 0] = 0.7;
-        //     pixels[p + 1] = 0;
-        //     pixels[p + 2] = 0;
-        //     pixels[p + 3] = 1;
-
-        //     for (var i = 0; i < points.length; i++)
-        //     {
-        //       var dist = distance([x,y], points[i]);
-        //       if(dist < points[i][2])
-        //       {
-        //         pixels[p + 1] = (points[i][2] - dist)/(points[i][2]*2);
-        //       }
-        //     }
-
-        //     p += 4;
-        //   }
-        // }
-      }
-
-      function createColorMap()
-      {
-        // var data = new Uint8Array([
-        //   165,0,38,
-        //   215,48,39,
-        //   244,109,67,
-        //   253,174,97,
-        //   254,224,144,
-        //   255,255,191,
-        //   255,255,191,
-        //   255,255,191,
-        //   255,255,191
-        //   // 224,243,248,
-        //   // 171,217,233,
-        //   // 116,173,209,
-        //   // 69,117,180,
-        //   // 49,54,149
-        // ]);
-
-        var data = new Uint8Array([
-          0,0,0
-        ]);
-
-        var color_map = new THREE.DataTexture(data, data.length / 3, 1, THREE.RGBFormat);
-        color_map.magFilter = THREE.LinearFilter;
-        color_map.minFilter = THREE.LinearFilter;
-
-        return color_map;
       }
 
       function createEnvironment()

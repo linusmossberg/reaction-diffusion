@@ -15,9 +15,12 @@ var render_vertex = `
 var render_fragment = `
 
   uniform sampler2D reaction_diffusion;
-  uniform sampler2D color_map;
   uniform vec2 resolution;
   uniform float time;
+
+  // Defines the finite differences step size.
+  // smaller values => larger normal variation => more bump
+  const float step = 0.1;
 
   varying vec2 texcoord;
 
@@ -26,34 +29,32 @@ var render_fragment = `
     return texture2D(reaction_diffusion, texcoord + vec2(x_offset, y_offset) / resolution).g;
   }
 
-  vec3 normal(float scale)
+  vec3 normal()
   {
     float
                             h10 = height(0.0, 1.0),
     h01 = height(-1.0, 0.0),                       h21 = height(1.0, 0.0),
                             h12 = height(0.0,-1.0);
 
-    float x_angle = atan((h21 - h01) * scale, 2.0 / resolution.x);
-    float y_angle = atan((h10 - h12) * scale, 2.0 / resolution.y);
-
-    return vec3(sin(y_angle),
-                sin(x_angle) * cos(y_angle),
-                cos(x_angle) * cos(y_angle));
+    return cross(normalize(vec3(step, 0.0, h21 - h01)),
+                 normalize(vec3(0.0, step, h10 - h12)));
   }
 
   void main() 
   {
-    vec3 normal = normal(0.05);
+    vec3 normal = normal();
 
     //vec3 light_dir = normalize(vec3(0.5,0.0,-1.0));
 
-    vec3 light_pos = vec3(1.0, 1.0, 2.0);
+    //vec3 light_pos = vec3(1.0, 1.0, 2.0);
     //vec3 light_pos = vec3((1 + cos(time)) / 2, (1 + sin(time)) / 2, 2)
-    vec3 light_dir = normalize(light_pos - vec3(0.5, 0.5, 0.0));
+    //vec3 light_dir = normalize(light_pos - vec3(0.5, 0.5, 0.0));
     //vec3 light_pos = vec3(0.0, 0.0, 1.0);
 
-    //vec3 light_pos = vec3((1.0 + cos(time * 0.2)) / 2.0, (1.0 + sin(time * 0.2)) / 2.0, 5.0);
-    //vec3 light_dir = normalize(light_pos - vec3(texcoord * resolution / 1000.0, 0.0));
+    vec2 xy_pos = vec2(0.5 + 0.5 * cos(0.5*time), 0.5 + 0.25 * sin(0.5*time));
+
+    vec3 light_pos = vec3(xy_pos * resolution, 300.0);
+    vec3 light_dir = normalize(light_pos - vec3(texcoord * resolution, 0.0));
 
     //vec3 light_dir = normalize(vec3(-0.5, -0.5, 10.0));
 
@@ -61,7 +62,6 @@ var render_fragment = `
     vec3 reflect_dir = reflect(light_dir, normal);
 
     vec3 light_color = vec3(1.0,1.0,1.0);
-    //vec3 diffuse_color = texture2D(color_map, vec2(height(0.0, 0.0), 0.0)).rgb;
     vec3 diffuse_color = vec3(1.0, 1.0, 1.0);
 
     float h = height(0.0, 0.0);
@@ -83,7 +83,7 @@ var render_fragment = `
     }
 
     //vec3 diffuse_color = vec3(0.8, 0.8, 0.8);
-    vec3 specular_color = vec3(0.4,0.4,0.4);
+    vec3 specular_color = vec3(0.5,0.5,0.5);
 
     vec3 ambient = light_color * 0.1;
     vec3 diffuse = light_color * max(dot(normal, light_dir), 0.0) * diffuse_color;
