@@ -1,4 +1,4 @@
-var render_vertex = `
+let render_vertex = `
 
   varying vec2 texcoord;
 
@@ -12,7 +12,7 @@ var render_vertex = `
 
 `;
 
-var render_fragment = `
+let render_fragment = `
 
   uniform sampler2D reaction_diffusion;
   uniform vec2 resolution;
@@ -45,23 +45,14 @@ var render_fragment = `
   {
     vec3 normal = normal();
 
-    //vec3 light_dir = normalize(vec3(0.5,0.0,-1.0));
-
-    //vec3 light_pos = vec3(1.0, 1.0, 2.0);
-    //vec3 light_pos = vec3((1 + cos(time)) / 2, (1 + sin(time)) / 2, 2)
-    //vec3 light_dir = normalize(light_pos - vec3(0.5, 0.5, 0.0));
-    //vec3 light_pos = vec3(0.0, 0.0, 1.0);
-
     vec3 texel_pos = vec3(texcoord * resolution, 0.0);
     vec3 light_dir = normalize(light_pos - texel_pos);
-
-    //vec3 light_dir = normalize(vec3(-0.5, -0.5, 10.0));
 
     vec3 view_dir = vec3(0.0,0.0,-1.0);
     vec3 reflect_dir = reflect(light_dir, normal);
 
     vec3 light_color = vec3(1.0);
-    vec3 diffuse_color = vec3(1.0, 1.0, 1.0);
+    vec3 diffuse_color = vec3(0.9, 0.9, 0.9);
 
     float h = height(0.0, 0.0);
 
@@ -86,19 +77,12 @@ var render_fragment = `
         specular = specular1;
       }
     }
-
-    //vec3 diffuse_color = vec3(0.8, 0.8, 0.8);
     
 
     vec3 ambient = light_color * 0.1;
     vec3 diffuse = light_color * max(dot(normal, light_dir), 0.0) * diffuse_color;
 
     gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
-
-    // if(distance(vec2(light_pos.x, light_pos.y), texcoord * resolution) < 25.0)
-    // {
-    //   gl_FragColor = vec4(specular, 1.0);
-    // }
   }
 
 `;
