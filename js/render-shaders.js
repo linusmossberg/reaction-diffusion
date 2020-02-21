@@ -1,3 +1,5 @@
+// Use GLSL highlighting
+
 let render_vertex = `
 
   varying vec2 texcoord;
@@ -19,8 +21,13 @@ let render_fragment = `
   uniform float time;
   uniform vec3 light_pos;
 
+  uniform vec3 substance_color;
+  uniform vec3 background_color;
+
+  uniform float shininess;
+
   // Defines the finite differences step size.
-  // smaller values => larger normal variation => more bump
+  // smaller values => larger gradient => more bump
   const float step = 0.05;
 
   varying vec2 texcoord;
@@ -52,11 +59,10 @@ let render_fragment = `
     vec3 reflect_dir = reflect(light_dir, normal);
 
     vec3 light_color = vec3(1.0);
-    vec3 diffuse_color = vec3(0.9, 0.9, 0.9);
+    vec3 diffuse_color = background_color;
 
     float h = height(0.0, 0.0);
 
-    vec3 diffuse_color1 = vec3(0.196078, 0.619608, 0.658824);
     float edge0 = 0.150;
     float edge1 = 0.190;
 
@@ -65,15 +71,15 @@ let render_fragment = `
     
     if(h > edge0)
     {
-      vec3 specular1 = light_color * pow(max(dot(view_dir, reflect_dir), 0.0), 64.0) * specular_color;
+      vec3 specular1 = light_color * pow(max(dot(view_dir, reflect_dir), 0.0), shininess) * specular_color;
       if(h < edge1)
       {
-        diffuse_color = mix(diffuse_color, diffuse_color1, smoothstep(edge0, edge1, h));
+        diffuse_color = mix(diffuse_color, substance_color, smoothstep(edge0, edge1, h));
         specular = mix(specular, specular1, smoothstep(edge0, edge1, h));
       }
       else
       {
-        diffuse_color = diffuse_color1;
+        diffuse_color = substance_color;
         specular = specular1;
       }
     }

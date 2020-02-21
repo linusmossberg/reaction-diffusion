@@ -4,6 +4,16 @@ let reaction_diffusion_fragment = `
 
 uniform sampler2D environment;
 
+uniform float feed;
+uniform float kill;
+uniform float diffusion_scale;
+
+uniform float feed_variation;
+uniform float kill_variation;
+uniform float diffusion_scale_variation;
+
+uniform float anisotropy;
+
 uniform vec2 mouse_pos;
 uniform bool mouse_down;
 
@@ -64,10 +74,11 @@ void main()
 {
   vec4 env = texture2D(environment, (gl_FragCoord.xy / resolution).xy);
 
-  float feed = env[0];
-  float kill = env[1];
-  float scale = env[2];
   vec2 direction = vec2(cos(env[3]), sin(env[3]));
+
+  float F = feed + env[0] * feed_variation;
+  float K = kill + env[1] * kill_variation;
+  float DS = diffusion_scale + env[2] * diffusion_scale_variation;
 
   // Old substance concentrations
   vec2 old = s(0.0, 0.0);
@@ -76,14 +87,14 @@ void main()
   vec2 reaction = vec2(-1.0, 1.0) * old[0] * old[1] * old[1];
 
   // Add some substance 0 and remove some substance 1
-  vec2 dissipation = vec2(feed * (1.0 - old[0]), -old[1] * (kill + feed));
+  vec2 dissipation = vec2(F * (1.0 - old[0]), -old[1] * (K + F));
 
   // Diffuse substances at different rates specified by D
-  //vec2 diffusion = laplace(old) * (D * scale);
-  vec2 diffusion = anisotropicDiffusion(direction, 0.7, old) * (D * scale);
+  //vec2 diffusion = laplace(old) * (D * DS);
+  vec2 diffusion = anisotropicDiffusion(direction, anisotropy, old) * (D * DS);
 
   // New substance concentrations
-  gl_FragColor.xy = old + (reaction + dissipation + diffusion) * (Dt / scale);
+  gl_FragColor.xy = old + (reaction + dissipation + diffusion) * (Dt / DS);
   
   if(mouse_down && gl_FragColor.y <= 0.2)
   {

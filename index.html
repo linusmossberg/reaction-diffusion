@@ -35,6 +35,7 @@
     <script src="js/external/three.min.js"></script>
     <script src="js/external/GPUComputationRenderer.min.js"></script>
     <script src="js/external/SimplexNoise.js"></script>
+    <script src="js/external/dat.gui.min.js"></script>
     <script src="js/reaction-diffusion-fragment.js"></script>
     <script src="js/render-shaders.js"></script>
     <script>
@@ -68,7 +69,10 @@
           "reaction_diffusion": { value: null }, 
           "resolution": { value: new THREE.Vector2(width, height) },
           "time": { value: clock.getElapsedTime() },
-          "light_pos": { value: new THREE.Vector3(light_pos.x, light_pos.y, 600) }
+          "light_pos": { value: new THREE.Vector3(light_pos.x, light_pos.y, 600) },
+          "substance_color": { value: new THREE.Vector3(0.196078, 0.619608, 0.658824) },
+          "background_color": { value: new THREE.Vector3(0.9, 0.9, 0.9) },
+          "shininess": { value: 128.0 }
         }
       });
       let plane = new THREE.Mesh( geometry, material );
@@ -86,10 +90,24 @@
 
       gpu_compute.setVariableDependencies(reaction_diffusion_variable, [reaction_diffusion_variable]);
 
-      createEnvironment();
+      reaction_diffusion_uniforms = reaction_diffusion_variable.material.uniforms;
 
-      reaction_diffusion_variable.material.uniforms['mouse_pos'] = { value: new THREE.Vector2(-100, -100) };
-      reaction_diffusion_variable.material.uniforms['mouse_down'] = { value: false };
+      reaction_diffusion_uniforms['mouse_pos'] = { value: new THREE.Vector2(-100, -100) };
+      reaction_diffusion_uniforms['mouse_down'] = { value: false };
+      reaction_diffusion_uniforms['feed'] = { value: 0.042 };
+      reaction_diffusion_uniforms['kill'] = { value: 0.06 };
+      reaction_diffusion_uniforms['diffusion_scale'] = { value: 2.5 };
+      reaction_diffusion_uniforms['feed_variation'] = { value: 0.001 };
+      reaction_diffusion_uniforms['kill_variation'] = { value: 0.001 };
+      reaction_diffusion_uniforms['diffusion_scale_variation'] = { value: 1.5 };
+      reaction_diffusion_uniforms['anisotropy'] = { value: 0.7 };
+
+      let simulation_iterations_per_frame = 4;
+      let environment_noise_scale = 250;
+
+      settings();
+
+      createEnvironment();
 
       let light_element = document.getElementById('light');
       let light_half_dim = light_element.clientWidth / 2;
@@ -100,7 +118,7 @@
         let x = clientX * (simulation_width / width);
         let y = simulation_height - clientY * (simulation_height / height);
 
-        reaction_diffusion_variable.material.uniforms['mouse_pos'].value = new THREE.Vector2(x, y);
+        reaction_diffusion_uniforms['mouse_pos'].value = new THREE.Vector2(x, y);
 
         if(mouse_down)
         {
@@ -118,13 +136,13 @@
             light_move = false;
           }
         }
-        reaction_diffusion_variable.material.uniforms['mouse_down'].value = brush_move;
+        reaction_diffusion_uniforms['mouse_down'].value = brush_move;
       }
 
       function onUp()
       {
         mouse_down = light_move = brush_move = false;
-        reaction_diffusion_variable.material.uniforms['mouse_down'].value = false;
+        reaction_diffusion_uniforms['mouse_down'].value = false;
       }
 
       let draw_text_removed = false;
@@ -208,7 +226,7 @@
       {
         let time = clock.getElapsedTime();
 
-        simulateReactionDiffusion(4);
+        simulateReactionDiffusion(simulation_iterations_per_frame);
         material.uniforms["reaction_diffusion"].value = gpu_compute.getCurrentRenderTarget(reaction_diffusion_variable).texture;
         material.uniforms["time"].value = time;
 
@@ -238,28 +256,8 @@
       {
         let simplex = new THREE.SimplexNoise();
 
-        //let feed  = 0.072;
-        //let kill  = 0.062;
-
-        //let feed = 0.045;
-        //let kill = 0.06;
-
-        let feed = 0.042;
-        let kill = 0.06;
-
-        //let feed  = 0.014;
-        //let kill  = 0.04;
-
-        //let feed  = 0.037;
-        //let kill  = 0.06;
-
-        let scale = 2.5;
-
-        let feed_variation = 0.001;
-        let kill_variation = 0.001;
-        let scale_variation = 1.5;
-
-        let noise_scale = 250;
+        //feed 0.072 0.045 0.042 0.014 0.037
+        //kill 0.062 0.06  0.06  0.04  0.06
 
         let pixels = new Float32Array(simulation_width * simulation_height * 4);
         let p = 0;
@@ -267,20 +265,112 @@
         {
           for (let x = 0; x < simulation_width; x++ )
           {
-            pixels[p + 0] = feed + feed_variation * simplex.noise3d(x / noise_scale, y / noise_scale, 0);
-            pixels[p + 1] = kill + kill_variation * simplex.noise3d(x / noise_scale, y / noise_scale, 10);
-            pixels[p + 2] = scale + scale_variation * simplex.noise3d(x / noise_scale, y / noise_scale, 20);
-            pixels[p + 3] = Math.PI * simplex.noise3d(x / noise_scale, y / noise_scale, 30);
+            pixels[p + 0] = simplex.noise3d(x / environment_noise_scale, y / environment_noise_scale, 0);
+            pixels[p + 1] = simplex.noise3d(x / environment_noise_scale, y / environment_noise_scale, 1000);
+            pixels[p + 2] = simplex.noise3d(x / environment_noise_scale, y / environment_noise_scale, 2000);
+            pixels[p + 3] = simplex.noise3d(x / environment_noise_scale, y / environment_noise_scale, 3000);
             p += 4;
           }
         }
 
-        reaction_diffusion_variable.material.uniforms['environment'] = { 
+        reaction_diffusion_uniforms['environment'] = { 
           value: new THREE.DataTexture(pixels, simulation_width, simulation_height, THREE.RGBAFormat, THREE.FloatType) 
         };
 
-        reaction_diffusion_variable.material.uniforms.environment.value.magFilter = THREE.LinearFilter;
-        reaction_diffusion_variable.material.uniforms.environment.value.minFilter = THREE.LinearFilter;
+        reaction_diffusion_uniforms.environment.value.magFilter = THREE.LinearFilter;
+        reaction_diffusion_uniforms.environment.value.minFilter = THREE.LinearFilter;
+      }
+
+      function settings()
+      {
+        let gui = new dat.GUI();
+        gui.width = 400;
+
+        let non_variation = { 
+          anisotropy: 0.7, 
+          speed: simulation_iterations_per_frame, 
+          environment_scale: 250,
+          update_environment: createEnvironment,
+          background_color: [229, 229, 229],
+          substance_color: [50, 158, 168],
+          shininess: 128.0
+        };
+
+        function variationProperty(value, variation, name, min0, max0, step0, min1, max1, step1)
+        {
+          this.Value = value;
+          this.Variation = variation;
+          this.folder = gui.addFolder(name);
+          this.uniform0 = name.replace(/ /g,"_").toLowerCase();
+          this.uniform1 = this.uniform0 + "_variation";
+          this.ValueController = this.folder.add(this, "Value", min0, max0, step0);
+          this.ValueController.onChange(() => {
+            reaction_diffusion_uniforms[this.uniform0].value = this.Value;
+          });
+          this.VariationController = this.folder.add(this, "Variation", min1, max1, step1);
+          this.VariationController.onChange(() => {
+            reaction_diffusion_uniforms[this.uniform1].value = this.Variation;
+          });
+        }
+
+        const min_diffusion_scale = 0.5;
+
+        let DS_prop = new variationProperty(2.5, 1.5, "Diffusion Scale", min_diffusion_scale, 10, 0.01, 0, 2.5 - min_diffusion_scale, 0.01);
+
+        gui.add(non_variation, 'anisotropy', 0.2, 0.8, 0.01).onChange(() => {
+          reaction_diffusion_uniforms['anisotropy'].value = non_variation.anisotropy;
+        }).name('Diffusion Anisotropy');
+
+        let F_prop = new variationProperty(0.06, 0.001, "Feed", 0.01, 0.1, 0.0001, 0, 0.01, 0.0001);
+        let K_prop = new variationProperty(0.042, 0.001, "Kill", 0.01, 0.1, 0.0001, 0, 0.01, 0.0001);
+
+        function changeDS()
+        {
+          let max_variation = DS_prop.Value - min_diffusion_scale;
+          if(max_variation <  DS_prop.Variation)
+          {
+            DS_prop.Variation = max_variation;
+          }
+
+          DS_prop.VariationController.max(max_variation);
+          DS_prop.VariationController.updateDisplay();
+
+          reaction_diffusion_uniforms['diffusion_scale'].value = DS_prop.Value;
+          reaction_diffusion_uniforms['diffusion_scale_variation'].value = DS_prop.Variation;
+        }
+
+        DS_prop.ValueController.onChange(changeDS);
+        DS_prop.VariationController.onChange(changeDS);
+
+        gui.add(non_variation, 'speed', 1, 32, 1).onChange(() => {
+          simulation_iterations_per_frame = non_variation.speed;
+        }).name('Simulations per Frame');
+
+        environment_folder = gui.addFolder('Environment');
+
+        environment_folder.add(non_variation, 'environment_scale', 1, 1000, 1).onChange(() => {
+          environment_noise_scale = non_variation.environment_scale;
+        }).name('Noise Scale');
+
+        environment_folder.add(non_variation, 'update_environment').name('Update/Randomize');
+
+        gui.addColor(non_variation, 'substance_color').onChange(() => {
+          material.uniforms.substance_color.value.x = non_variation.substance_color[0] / 255;
+          material.uniforms.substance_color.value.y = non_variation.substance_color[1] / 255;
+          material.uniforms.substance_color.value.z = non_variation.substance_color[2] / 255;
+        }).name("Substance Color");
+
+        gui.addColor(non_variation, 'background_color').onChange(() => {
+          material.uniforms.background_color.value.x = non_variation.background_color[0] / 255;
+          material.uniforms.background_color.value.y = non_variation.background_color[1] / 255;
+          material.uniforms.background_color.value.z = non_variation.background_color[2] / 255;
+        }).name("Background Color");
+
+        gui.add(non_variation, 'shininess', 8, 512, 1).onChange(() => {
+          material.uniforms.shininess.value = non_variation.shininess;
+        }).name('Phong Shininess');
+
+        gui.close();
       }
 
     </script>
