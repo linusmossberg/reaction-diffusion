@@ -28,7 +28,7 @@ let render_fragment = `
 
   // Defines the finite differences step size.
   // smaller values => larger gradient => more bump
-  const float step = 0.05;
+  const float step = 0.1;
 
   varying vec2 texcoord;
 

@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width">
     <title>Reaction Diffusion</title>
     <style>
       body { margin: 0; }
@@ -11,7 +11,7 @@
         position: absolute;
         top: 30%;
         width: 100%;
-        font-size: 10em;
+        font-size: 7rem;
         text-align: center;
         z-index: 100;
         opacity: 0.2;
@@ -43,8 +43,8 @@
       let width = window.innerWidth;
       let height = window.innerHeight;
 
-      let simulation_width = Math.round(width / 2);
-      let simulation_height = Math.round(height / 2);
+      let simulation_width = Math.round(width * window.devicePixelRatio / 2.5);
+      let simulation_height = Math.round(height * window.devicePixelRatio / 2.5);
 
       let scene = new THREE.Scene();
 
@@ -55,7 +55,7 @@
       renderer.setSize(width, height);
       document.body.appendChild(renderer.domElement);
 
-      let light_pos = new THREE.Vector2(width/2, height/2);
+      let light_pos = new THREE.Vector2(simulation_width/2, simulation_height/2);
       let mouse_down = false;
       let light_move = false;
       let brush_move = false;
@@ -68,7 +68,7 @@
         fragmentShader: render_fragment,
         uniforms: { 
           "reaction_diffusion": { value: null }, 
-          "resolution": { value: new THREE.Vector2(width, height) },
+          "resolution": { value: new THREE.Vector2(simulation_width, simulation_height) },
           "time": { value: clock.getElapsedTime() },
           "light_pos": { value: new THREE.Vector3(light_pos.x, light_pos.y, 600) },
           "substance_color": { value: new THREE.Vector3(0.196078, 0.619608, 0.658824) },
@@ -112,7 +112,7 @@
 
       let light_element = document.getElementById('light');
       let light_half_dim = light_element.clientWidth / 2;
-      updateLightPosition(light_pos);
+      updateLightPosition(new THREE.Vector2(width/2, height/2));
 
       function onMove(clientX, clientY)
       {
@@ -129,7 +129,7 @@
             light_move = true;
             brush_move = false;
             updateLightPosition(mouse_pos);
-            material.uniforms["light_pos"].value = new THREE.Vector3(mouse_pos.x, mouse_pos.y, 600);
+            material.uniforms["light_pos"].value = new THREE.Vector3(x, y, 600);
           }
           else
           {
@@ -286,15 +286,7 @@
       {
         let gui = new dat.GUI();
 
-        let non_variation = { 
-          anisotropy: 0.7, 
-          speed: simulation_iterations_per_frame, 
-          environment_scale: 250,
-          update_environment: createEnvironment,
-          background_color: [229, 229, 229],
-          substance_color: [50, 158, 168],
-          shininess: 128.0
-        };
+        gui.width = 300;
 
         function variationProperty(value, variation, name, min0, max0, step0, min1, max1, step1)
         {
@@ -316,11 +308,6 @@
         const min_diffusion_scale = 0.5;
 
         let DS_prop = new variationProperty(2.5, 1.5, "Diffusion Scale", min_diffusion_scale, 10, 0.01, 0, 2.5 - min_diffusion_scale, 0.01);
-
-        gui.add(non_variation, 'anisotropy', 0.2, 0.8, 0.01).onChange(() => {
-          reaction_diffusion_uniforms['anisotropy'].value = non_variation.anisotropy;
-        }).name('Diffusion Anisotropy');
-
         let F_prop = new variationProperty(0.06, 0.001, "Feed", 0.01, 0.1, 0.0001, 0, 0.01, 0.0001);
         let K_prop = new variationProperty(0.042, 0.001, "Kill", 0.01, 0.1, 0.0001, 0, 0.01, 0.0001);
 
@@ -342,9 +329,23 @@
         DS_prop.ValueController.onChange(changeDS);
         DS_prop.VariationController.onChange(changeDS);
 
+        let non_variation = { 
+          anisotropy: 0.7, 
+          speed: simulation_iterations_per_frame, 
+          environment_scale: 250,
+          update_environment: createEnvironment,
+          background_color: [229, 229, 229],
+          substance_color: [50, 158, 168],
+          shininess: 64.0
+        };
+
+        gui.add(non_variation, 'anisotropy', 0.2, 0.8, 0.01).onChange(() => {
+          reaction_diffusion_uniforms['anisotropy'].value = non_variation.anisotropy;
+        }).name('Anisotropy');
+
         gui.add(non_variation, 'speed', 1, 32, 1).onChange(() => {
           simulation_iterations_per_frame = non_variation.speed;
-        }).name('Simulations per Frame');
+        }).name('Iterations/Frame');
 
         environment_folder = gui.addFolder('Environment');
 
@@ -352,19 +353,19 @@
           environment_noise_scale = non_variation.environment_scale;
         }).name('Noise Scale');
 
-        environment_folder.add(non_variation, 'update_environment').name('Update/Randomize');
+        environment_folder.add(non_variation, 'update_environment').name('Update');
 
         gui.addColor(non_variation, 'substance_color').onChange(() => {
           material.uniforms.substance_color.value.x = non_variation.substance_color[0] / 255;
           material.uniforms.substance_color.value.y = non_variation.substance_color[1] / 255;
           material.uniforms.substance_color.value.z = non_variation.substance_color[2] / 255;
-        }).name("Substance Color");
+        }).name("Substance");
 
         gui.addColor(non_variation, 'background_color').onChange(() => {
           material.uniforms.background_color.value.x = non_variation.background_color[0] / 255;
           material.uniforms.background_color.value.y = non_variation.background_color[1] / 255;
           material.uniforms.background_color.value.z = non_variation.background_color[2] / 255;
-        }).name("Background Color");
+        }).name("Background");
 
         gui.add(non_variation, 'shininess', 8, 512, 1).onChange(() => {
           material.uniforms.shininess.value = non_variation.shininess;
