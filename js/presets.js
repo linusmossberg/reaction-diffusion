@@ -33,7 +33,7 @@ let gui_presets = {
         "feed_variation": 0,
         "kill": 0.060000000000000005,
         "kill_variation": 0,
-        "anisotropy": 0.5,
+        "anisotropy": 0.7000000000000001,
         "simulation_iterations_per_frame": 4,
         "environment_noise_scale": 250,
         "substance_color": [
@@ -83,7 +83,7 @@ let gui_presets = {
         "kill_variation": 0,
         "anisotropy": 0.5,
         "simulation_iterations_per_frame": 4,
-        "environment_noise_scale": 200,
+        "environment_noise_scale": 250,
         "substance_color": [
           0,
           0,
@@ -105,9 +105,9 @@ let gui_presets = {
         "feed_variation": 0,
         "kill": 0.060000000000000005,
         "kill_variation": 0,
-        "anisotropy": 0.5,
+        "anisotropy": 0.8,
         "simulation_iterations_per_frame": 4,
-        "environment_noise_scale": 200,
+        "environment_noise_scale": 250,
         "substance_color": [
           0,
           0,
@@ -129,7 +129,7 @@ let gui_presets = {
         "feed_variation": 0.01,
         "kill": 0.060000000000000005,
         "kill_variation": 0.01,
-        "anisotropy": 0.5,
+        "anisotropy": 0.2,
         "simulation_iterations_per_frame": 4,
         "environment_noise_scale": 250,
         "substance_color": [
@@ -153,7 +153,7 @@ let gui_presets = {
         "feed_variation": 0,
         "kill": 0.058100000000000006,
         "kill_variation": 0,
-        "anisotropy": 0.5,
+        "anisotropy": 0.8,
         "simulation_iterations_per_frame": 4,
         "environment_noise_scale": 250,
         "substance_color": [
@@ -177,7 +177,7 @@ let gui_presets = {
         "feed_variation": 0,
         "kill": 0.054,
         "kill_variation": 0,
-        "anisotropy": 0.5,
+        "anisotropy": 0.7000000000000001,
         "simulation_iterations_per_frame": 4,
         "environment_noise_scale": 250,
         "substance_color": [
@@ -273,7 +273,7 @@ let gui_presets = {
         "feed_variation": 0,
         "kill": 0.065,
         "kill_variation": 0,
-        "anisotropy": 0.6,
+        "anisotropy": 0.5,
         "simulation_iterations_per_frame": 4,
         "environment_noise_scale": 250,
         "substance_color": [
@@ -369,7 +369,7 @@ let gui_presets = {
         "feed_variation": 0,
         "kill": 0.056,
         "kill_variation": 0,
-        "anisotropy": 0.5,
+        "anisotropy": 0.8,
         "simulation_iterations_per_frame": 4,
         "environment_noise_scale": 250,
         "substance_color": [
@@ -390,12 +390,12 @@ let gui_presets = {
         "diffusion_scale": 1,
         "diffusion_scale_variation": 0,
         "feed": 0.013000000000000001,
-        "feed_variation": 0.004,
+        "feed_variation": 0,
         "kill": 0.045000000000000005,
         "kill_variation": 0,
-        "anisotropy": 0.5,
+        "anisotropy": 0.8,
         "simulation_iterations_per_frame": 4,
-        "environment_noise_scale": 150,
+        "environment_noise_scale": 250,
         "substance_color": [
           47.88239722158395,
           87.25087026136285,

@@ -266,7 +266,7 @@
             pixels[p + 0] = simplex.noise3d(x / S.environment_noise_scale, y / S.environment_noise_scale, 0);
             pixels[p + 1] = simplex.noise3d(x / S.environment_noise_scale, y / S.environment_noise_scale, 1000);
             pixels[p + 2] = simplex.noise3d(x / S.environment_noise_scale, y / S.environment_noise_scale, 2000);
-            pixels[p + 3] = simplex.noise3d(x / S.environment_noise_scale, y / S.environment_noise_scale, 3000);
+            pixels[p + 3] = (1 + simplex.noise3d(x / S.environment_noise_scale, y / S.environment_noise_scale, 3000)) * Math.PI;
             p += 4;
           }
         }
@@ -289,7 +289,6 @@
 
         gui.useLocalStorage = true;
         gui.remember(S);
-        //gui.preset = "Default";
 
         function variationProperty(value, variation, name, min0, max0, step0, min1, max1, step1)
         {
@@ -350,7 +349,7 @@
 
         gui.add(S, 'anisotropy', 0.2, 0.8, 0.01).onChange(() => {
           reaction_diffusion_uniforms['anisotropy'].value = S.anisotropy;
-          reaction_diffusion_uniforms['anisotropic'].value = (S.anisotropy - 0.5) > 1e-3;
+          reaction_diffusion_uniforms['anisotropic'].value = Math.abs(S.anisotropy - 0.5) > 1e-3;
         }).name('Anisotropy');
 
         gui.add(S, 'simulation_iterations_per_frame', 1, 32, 1).name('Iterations/Frame');
