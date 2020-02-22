@@ -11,9 +11,8 @@
         position: absolute;
         top: 30%;
         width: 100%;
-        font-size: 7rem;
+        font-size: 125px;
         text-align: center;
-        z-index: 100;
         opacity: 0.2;
         display: block;
         font-family: "Courier New", Courier, monospace;
@@ -21,12 +20,11 @@
       }
       #light {
         position: absolute;
-        z-index: 101;
         opacity: 0.0;
         display: block;
         pointer-events: none;
         cursor: move;
-        width: 5rem;
+        width: 75px;
       }
     </style>
   </head>
@@ -65,8 +63,6 @@
       let light_move = false;
       let brush_move = false;
 
-      let clock = new THREE.Clock;
-      let geometry = new THREE.PlaneGeometry(width, height, 1, 1);
       let material = new THREE.ShaderMaterial
       ({ 
         vertexShader: render_vertex,
@@ -74,15 +70,13 @@
         uniforms: { 
           "reaction_diffusion": { value: null }, 
           "resolution": { value: new THREE.Vector2(simulation_width, simulation_height) },
-          "time": { value: clock.getElapsedTime() },
           "light_pos": { value: new THREE.Vector3(light_pos.x, light_pos.y, 300) },
           "substance_color": { value: new THREE.Vector3().fromArray(S.substance_color).divideScalar(255) },
           "background_color": { value: new THREE.Vector3().fromArray(S.background_color).divideScalar(255) },
           "shininess": { value: S.shininess }
         }
       });
-      let plane = new THREE.Mesh( geometry, material );
-      scene.add(plane);
+      scene.add(new THREE.Mesh(new THREE.PlaneGeometry(width, height, 1, 1), material));
 
       let gpu_compute = new THREE.GPUComputationRenderer(simulation_width, simulation_height, renderer);
 
@@ -108,8 +102,7 @@
       reaction_diffusion_uniforms['diffusion_scale_variation'] = { value: S.diffusion_scale_variation };
       reaction_diffusion_uniforms['anisotropy'] = { value: S.anisotropy };
       reaction_diffusion_uniforms['reset'] = { value: false };
-
-      createEnvironment();
+      reaction_diffusion_uniforms['anisotropic'] = { value: Math.abs(S.anisotropy - 0.5) > 1e-3 };
 
       let light_element = document.getElementById('light');
       let light_half_dim = light_element.clientWidth / 2;
@@ -147,16 +140,15 @@
         reaction_diffusion_uniforms['mouse_down'].value = false;
       }
 
-      let draw_text_removed = false;
       function onDown()
       {
         mouse_down = true;
 
-        if(!draw_text_removed)
+        if(onDown.draw_text_removed === undefined)
         {
           light_element.style.opacity = 0.6;
           document.getElementById('draw').remove();
-          draw_text_removed = true;
+          onDown.draw_text_removed = true;
         }
       }
 
@@ -211,6 +203,8 @@
       renderer.domElement.addEventListener("touchcancel", touchCancel, false);
       renderer.domElement.addEventListener("touchmove", touchMove, false);
 
+      createEnvironment();
+
       reaction_diffusion_variable.wrapS = THREE.ClampToEdgeWrapping;
       reaction_diffusion_variable.wrapT = THREE.ClampToEdgeWrapping;
 
@@ -226,11 +220,8 @@
       
       function render()
       {
-        let time = clock.getElapsedTime();
-
         simulateReactionDiffusion(S.simulation_iterations_per_frame);
         material.uniforms["reaction_diffusion"].value = gpu_compute.getCurrentRenderTarget(reaction_diffusion_variable).texture;
-        material.uniforms["time"].value = time;
 
         renderer.render(scene, camera);
       }
@@ -254,12 +245,17 @@
         }
       }
 
-      function createEnvironment()
+      function createEnvironment(update = true)
       {
-        let simplex = new THREE.SimplexNoise();
+        // Don't update unless it's explicitly wanted or if the noise scale is different.
+        if(!update && createEnvironment.prev_scale !== undefined && createEnvironment.prev_scale == S.environment_noise_scale)
+        {
+          return;
+        }
 
-        //feed 0.072 0.045 0.042 0.014 0.037
-        //kill 0.062 0.06  0.06  0.04  0.06
+        createEnvironment.prev_scale = S.environment_noise_scale;
+
+        let simplex = new THREE.SimplexNoise();
 
         let pixels = new Float32Array(simulation_width * simulation_height * 4);
         let p = 0;
@@ -286,7 +282,8 @@
       function settings()
       {
         let gui = new dat.GUI({
-          load: gui_presets
+          load: gui_presets,
+          closeOnTop: true
         });
 
         gui.width = 300;
@@ -354,13 +351,16 @@
 
         gui.add(S, 'anisotropy', 0.2, 0.8, 0.01).onChange(() => {
           reaction_diffusion_uniforms['anisotropy'].value = S.anisotropy;
+          reaction_diffusion_uniforms['anisotropic'].value = (S.anisotropy - 0.5) > 1e-3;
         }).name('Anisotropy');
 
         gui.add(S, 'simulation_iterations_per_frame', 1, 32, 1).name('Iterations/Frame');
 
         environment_folder = gui.addFolder('Environment');
 
-        environment_folder.add(S, 'environment_noise_scale', 1, 1000, 1).name('Noise Scale').onFinishChange(createEnvironment);
+        environment_folder.add(S, 'environment_noise_scale', 1, 1000, 1).name('Noise Scale').onFinishChange(() => {
+          createEnvironment(false);
+        });
 
         environment_folder.add(S, 'update_environment').name('Update');
 
