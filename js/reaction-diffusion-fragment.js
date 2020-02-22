@@ -17,6 +17,8 @@ uniform float anisotropy;
 uniform vec2 mouse_pos;
 uniform bool mouse_down;
 
+uniform bool reset;
+
 const vec2 D = vec2(1, 0.5);
 const float Dt = 1.0;
 
@@ -72,36 +74,43 @@ vec2 anisotropicDiffusion(vec2 dir, float a, vec2 center)
 
 void main() 
 {
-  vec4 env = texture2D(environment, (gl_FragCoord.xy / resolution).xy);
-
-  vec2 direction = vec2(cos(env[3]), sin(env[3]));
-
-  float F = feed + env[0] * feed_variation;
-  float K = kill + env[1] * kill_variation;
-  float DS = diffusion_scale + env[2] * diffusion_scale_variation;
-
-  // Old substance concentrations
-  vec2 old = s(0.0, 0.0);
-
-  // Convert some of substance 0 to substance 1
-  vec2 reaction = vec2(-1.0, 1.0) * old[0] * old[1] * old[1];
-
-  // Add some substance 0 and remove some substance 1
-  vec2 dissipation = vec2(F * (1.0 - old[0]), -old[1] * (K + F));
-
-  // Diffuse substances at different rates specified by D
-  //vec2 diffusion = laplace(old) * (D * DS);
-  vec2 diffusion = anisotropicDiffusion(direction, anisotropy, old) * (D * DS);
-
-  // New substance concentrations
-  gl_FragColor.xy = old + (reaction + dissipation + diffusion) * (Dt / DS);
-  
-  if(mouse_down && gl_FragColor.y <= 0.2)
+  if(reset)
   {
-    float distance = length(gl_FragCoord.xy - mouse_pos);
-    if(distance <= 10.0)
+    gl_FragColor = vec4(0.0);
+  }
+  else
+  {
+    vec4 env = texture2D(environment, (gl_FragCoord.xy / resolution).xy);
+
+    vec2 direction = vec2(cos(env[3]), sin(env[3]));
+
+    float F = feed + env[0] * feed_variation;
+    float K = kill + env[1] * kill_variation;
+    float DS = diffusion_scale + env[2] * diffusion_scale_variation;
+
+    // Old substance concentrations
+    vec2 old = s(0.0, 0.0);
+
+    // Convert some of substance 0 to substance 1
+    vec2 reaction = vec2(-1.0, 1.0) * old[0] * old[1] * old[1];
+
+    // Add some substance 0 and remove some substance 1
+    vec2 dissipation = vec2(F * (1.0 - old[0]), -old[1] * (K + F));
+
+    // Diffuse substances at different rates specified by D
+    //vec2 diffusion = laplace(old) * (D * DS);
+    vec2 diffusion = anisotropicDiffusion(direction, anisotropy, old) * (D * DS);
+
+    // New substance concentrations
+    gl_FragColor.xy = old + (reaction + dissipation + diffusion) * (Dt / DS);
+    
+    if(mouse_down && gl_FragColor.y <= 0.2)
     {
-      gl_FragColor.y += (10.0 - distance)/56.0;
+      float distance = length(gl_FragCoord.xy - mouse_pos);
+      if(distance <= 10.0)
+      {
+        gl_FragColor.y += (10.0 - distance)/56.0;
+      }
     }
   }
 
