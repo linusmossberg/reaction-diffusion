@@ -346,6 +346,10 @@
           gpu_compute.compute();
           reaction_diffusion_uniforms['reset'].value = false;
         }
+        S.clearLocalStorage = function() {
+          localStorage.clear();
+          location.reload();
+        }
 
         gui.add(S, 'anisotropy', 0.2, 0.8, 0.01).onChange(() => {
           reaction_diffusion_uniforms['anisotropy'].value = S.anisotropy;
@@ -374,6 +378,7 @@
           material.uniforms.shininess.value = S.shininess;
         }).name('Phong Shininess');
 
+        gui.add(S, 'clearLocalStorage').name('Restore Defaults');
         gui.add(S, 'reset').name('Clear Substances');
 
         gui.close();
