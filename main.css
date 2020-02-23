@@ -1,0 +1,28 @@
+body { 
+  margin: 0; 
+}
+
+canvas { 
+  display: block; 
+}
+
+#draw {
+  position: absolute;
+  top: 30%;
+  width: 100%;
+  font-size: 100px;
+  text-align: center;
+  opacity: 0.2;
+  display: block;
+  font-family: "Courier New", Courier, monospace;
+  pointer-events: none;
+}
+
+#light {
+  position: absolute;
+  opacity: 0.0;
+  display: block;
+  pointer-events: none;
+  cursor: move;
+  width: 75px;
+}
