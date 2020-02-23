@@ -408,6 +408,30 @@ let gui_presets = {
         ],
         "shininess": 128
       }
+    },
+    "Tensor Field Visualization": {
+      "0": {
+        "diffusion_scale": 0.5,
+        "diffusion_scale_variation": 0,
+        "feed": 0.030000000000000002,
+        "feed_variation": 0,
+        "kill": 0.063,
+        "kill_variation": 0,
+        "anisotropy": 0.8,
+        "simulation_iterations_per_frame": 4,
+        "environment_noise_scale": 500,
+        "substance_color": [
+          0,
+          0,
+          0
+        ],
+        "background_color": [
+          230,
+          230,
+          230
+        ],
+        "shininess": 8
+      }
     }
   },
   "closed": true,
