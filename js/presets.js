@@ -29,11 +29,11 @@ let gui_presets = {
       "0": {
         "diffusion_scale": 1,
         "diffusion_scale_variation": 0,
-        "feed": 0.037000000000000005,
+        "feed": 0.037,
         "feed_variation": 0,
-        "kill": 0.060000000000000005,
+        "kill": 0.06,
         "kill_variation": 0,
-        "anisotropy": 0.7000000000000001,
+        "anisotropy": 0.7,
         "simulation_iterations_per_frame": 4,
         "environment_noise_scale": 250,
         "substance_color": [
@@ -77,7 +77,7 @@ let gui_presets = {
       "0": {
         "diffusion_scale": 2.5,
         "diffusion_scale_variation": 1.5,
-        "feed": 0.030000000000000002,
+        "feed": 0.03,
         "feed_variation": 0,
         "kill": 0.063,
         "kill_variation": 0,
@@ -103,7 +103,7 @@ let gui_presets = {
         "diffusion_scale_variation": 0,
         "feed": 0.025,
         "feed_variation": 0,
-        "kill": 0.060000000000000005,
+        "kill": 0.06,
         "kill_variation": 0,
         "anisotropy": 0.8,
         "simulation_iterations_per_frame": 4,
@@ -127,7 +127,7 @@ let gui_presets = {
         "diffusion_scale_variation": 1.5,
         "feed": 0.0475,
         "feed_variation": 0.01,
-        "kill": 0.060000000000000005,
+        "kill": 0.06,
         "kill_variation": 0.01,
         "anisotropy": 0.2,
         "simulation_iterations_per_frame": 4,
@@ -151,7 +151,7 @@ let gui_presets = {
         "diffusion_scale_variation": 0,
         "feed": 0.039,
         "feed_variation": 0,
-        "kill": 0.058100000000000006,
+        "kill": 0.0581,
         "kill_variation": 0,
         "anisotropy": 0.8,
         "simulation_iterations_per_frame": 4,
@@ -177,7 +177,7 @@ let gui_presets = {
         "feed_variation": 0,
         "kill": 0.054,
         "kill_variation": 0,
-        "anisotropy": 0.7000000000000001,
+        "anisotropy": 0.7,
         "simulation_iterations_per_frame": 4,
         "environment_noise_scale": 250,
         "substance_color": [
@@ -187,7 +187,7 @@ let gui_presets = {
         ],
         "background_color": [
           142.54421458524817,
-          202.50000000000003,
+          202.5,
           142.54421458524817
         ],
         "shininess": 64
@@ -221,7 +221,7 @@ let gui_presets = {
       "0": {
         "diffusion_scale": 2,
         "diffusion_scale_variation": 1.5,
-        "feed": 0.07200000000000001,
+        "feed": 0.072,
         "feed_variation": 0,
         "kill": 0.062,
         "kill_variation": 0,
@@ -230,7 +230,7 @@ let gui_presets = {
         "environment_noise_scale": 250,
         "substance_color": [
           90.92656752642462,
-          202.50000000000003,
+          202.5,
           156.55799839323373
         ],
         "background_color": [
@@ -253,13 +253,13 @@ let gui_presets = {
         "simulation_iterations_per_frame": 4,
         "environment_noise_scale": 250,
         "substance_color": [
-          179.99999999999997,
+          179.9,
           169.41176470588235,
           0
         ],
         "background_color": [
           22.335642954332464,
-          24.999999999999996,
+          24.9,
           13.676482555912987
         ],
         "shininess": 64
@@ -282,8 +282,8 @@ let gui_presets = {
           0
         ],
         "background_color": [
-          227.49999999999997,
-          227.49999999999997,
+          227.49,
+          227.49,
           227.49999999999997
         ],
         "shininess": 8
@@ -317,7 +317,7 @@ let gui_presets = {
       "0": {
         "diffusion_scale": 1,
         "diffusion_scale_variation": 0.25,
-        "feed": 0.030000000000000002,
+        "feed": 0.03,
         "feed_variation": 0,
         "kill": 0.0565,
         "kill_variation": 0,
@@ -341,7 +341,7 @@ let gui_presets = {
       "0": {
         "diffusion_scale": 1,
         "diffusion_scale_variation": 0,
-        "feed": 0.026000000000000002,
+        "feed": 0.026,
         "feed_variation": 0,
         "kill": 0.055,
         "kill_variation": 0,
@@ -349,7 +349,7 @@ let gui_presets = {
         "simulation_iterations_per_frame": 4,
         "environment_noise_scale": 250,
         "substance_color": [
-          22.500000000000004,
+          22.5,
           10.634955699881061,
           5.691187241498163
         ],
@@ -373,7 +373,7 @@ let gui_presets = {
         "simulation_iterations_per_frame": 4,
         "environment_noise_scale": 250,
         "substance_color": [
-          22.500000000000004,
+          22.5,
           11.480975827543798,
           5.470599006204045
         ],
@@ -389,9 +389,9 @@ let gui_presets = {
       "0": {
         "diffusion_scale": 1,
         "diffusion_scale_variation": 0,
-        "feed": 0.013000000000000001,
+        "feed": 0.013,
         "feed_variation": 0,
-        "kill": 0.045000000000000005,
+        "kill": 0.045,
         "kill_variation": 0,
         "anisotropy": 0.8,
         "simulation_iterations_per_frame": 4,
@@ -411,11 +411,11 @@ let gui_presets = {
     },
     "Tensor Field Visualization": {
       "0": {
-        "diffusion_scale": 0.5,
+        "diffusion_scale": 0.75,
         "diffusion_scale_variation": 0,
-        "feed": 0.030000000000000002,
+        "feed": 0.03,
         "feed_variation": 0,
-        "kill": 0.063,
+        "kill": 0.062,
         "kill_variation": 0,
         "anisotropy": 0.8,
         "simulation_iterations_per_frame": 4,
