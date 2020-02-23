@@ -148,6 +148,7 @@
 
         if(onDown.draw_text_removed === undefined)
         {
+          S.toggleLight.initiated = true;
           S.toggleLight();
           document.getElementById('draw').remove();
           onDown.draw_text_removed = true;
@@ -333,8 +334,8 @@
         const min_diffusion_scale = 0.5;
 
         let DS_prop = new variationProperty(2.5, 1.5, "Diffusion Scale", min_diffusion_scale, 10, 0.01, 0, 2.5 - min_diffusion_scale, 0.01);
-        let F_prop = new variationProperty(0.042, 0.001, "Feed", 0.01, 0.1, 0.0001, 0, 0.01, 0.0001);
-        let K_prop = new variationProperty(0.06, 0.001, "Kill", 0.01, 0.1, 0.0001, 0, 0.01, 0.0001);
+        let F_prop = new variationProperty(0.042, 0.001, "Feed", 0.01, 0.12, 0.0001, 0, 0.01, 0.0001);
+        let K_prop = new variationProperty(0.06, 0.001, "Kill", 0.01, 0.12, 0.0001, 0, 0.01, 0.0001);
 
         function changeDS()
         {
@@ -363,8 +364,11 @@
         S.shininess = 64.0;
         S.toggleLight = function()
         {
-          light_enabled = !light_enabled;
-          light_element.style.opacity = light_enabled * 0.6;
+          if(S.toggleLight.initiated === true)
+          {
+            light_enabled = !light_enabled;
+            light_element.style.opacity = light_enabled * 0.6;
+          }
         }
         S.reset = function() 
         {
