@@ -37,8 +37,7 @@ let material = new THREE.ShaderMaterial
     "step": { value: 1.0 / Settings.bump }
   }
 });
-let plane = new THREE.PlaneGeometry(width, height, 1, 1);
-scene.add(new THREE.Mesh(plane, material));
+scene.add(new THREE.Mesh(new THREE.PlaneGeometry(width, height, 1, 1), material));
 
 let gpu_compute = new THREE.GPUComputationRenderer(simulation_width, simulation_height, renderer);
 
