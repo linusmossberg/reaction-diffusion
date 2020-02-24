@@ -1,5 +1,5 @@
 body { 
-  margin: 0; 
+  margin: 0;
 }
 
 canvas { 
@@ -7,7 +7,7 @@ canvas {
 }
 
 #draw {
-  position: absolute;
+  position: fixed;
   top: 30%;
   width: 100%;
   font-size: 100px;

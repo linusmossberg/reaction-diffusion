@@ -37,7 +37,8 @@ let material = new THREE.ShaderMaterial
     "step": { value: 1.0 / Settings.bump }
   }
 });
-scene.add(new THREE.Mesh(new THREE.PlaneGeometry(width, height, 1, 1), material));
+let plane = new THREE.PlaneGeometry(width, height, 1, 1);
+scene.add(new THREE.Mesh(plane, material));
 
 let gpu_compute = new THREE.GPUComputationRenderer(simulation_width, simulation_height, renderer);
 
@@ -48,6 +49,9 @@ let reaction_diffusion_variable = gpu_compute.addVariable(
   reaction_diffusion_fragment,
   reaction_diffusion
 );
+
+reaction_diffusion_variable.wrapS = THREE.ClampToEdgeWrapping;
+reaction_diffusion_variable.wrapT = THREE.ClampToEdgeWrapping;
 
 gpu_compute.setVariableDependencies(reaction_diffusion_variable, [reaction_diffusion_variable]);
 
@@ -84,7 +88,6 @@ function onMove(clientX, clientY)
       light_move = true;
       brush_move = false;
       updateLightPosition(mouse_pos);
-      material.uniforms.light_pos.value = new THREE.Vector3(x, y, Settings.light_height);
     }
     else
     {
@@ -167,9 +170,6 @@ renderer.domElement.addEventListener("touchmove", touchMove, false);
 
 createEnvironment();
 
-reaction_diffusion_variable.wrapS = THREE.ClampToEdgeWrapping;
-reaction_diffusion_variable.wrapT = THREE.ClampToEdgeWrapping;
-
 gpu_compute.init();
 
 function animate() 
@@ -183,7 +183,7 @@ animate();
 function render()
 {
   simulateReactionDiffusion(Settings.simulation_iterations_per_frame);
-  material.uniforms["reaction_diffusion"].value = gpu_compute.getCurrentRenderTarget(reaction_diffusion_variable).texture;
+  material.uniforms.reaction_diffusion.value = gpu_compute.getCurrentRenderTarget(reaction_diffusion_variable).texture;
 
   renderer.render(scene, camera);
 
@@ -207,13 +207,18 @@ function simulateReactionDiffusion(iterations)
 
 function updateLightPosition(pos)
 {
-  if(pos.x - light_half_dim > 0 && pos.x + light_half_dim < width && 
-     pos.y - light_half_dim > 0 && pos.y + light_half_dim < height)
-  {
-    light_pos = pos;
-    light_element.style.top = height - pos.y - light_half_dim + "px";
-    light_element.style.left = pos.x - light_half_dim + "px";
-  }
+  pos.x = (pos.x - light_half_dim <= 0) ? light_half_dim : 
+         ((pos.x + light_half_dim >= width) ? width - light_half_dim : pos.x);
+
+  pos.y = (pos.y - light_half_dim <= 0) ? light_half_dim :
+         ((pos.y + light_half_dim >= height) ? height - light_half_dim : pos.y); 
+
+  light_pos = pos;
+  light_element.style.top = height - pos.y - light_half_dim + "px";
+  light_element.style.left = pos.x - light_half_dim + "px";
+
+  material.uniforms.light_pos.value.x = pos.x * (simulation_width / width);
+  material.uniforms.light_pos.value.y = simulation_height - (height - pos.y) * (simulation_height / height);
 }
 
 function createEnvironment(update = true)
