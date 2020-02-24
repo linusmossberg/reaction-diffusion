@@ -1,0 +1,5 @@
+theme: jekyll-theme-minimal
+title: "Reaction Diffusion"
+logo: "/data/thumbnail.jpg"
+markdown: GFM
+google_analytics: UA-156004912-1
