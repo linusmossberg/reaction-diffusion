@@ -30,10 +30,12 @@ let material = new THREE.ShaderMaterial
   uniforms: { 
     "reaction_diffusion": { value: null }, 
     "resolution": { value: new THREE.Vector2(simulation_width, simulation_height) },
-    "light_pos": { value: new THREE.Vector3(light_pos.x, light_pos.y, 300) },
+    "light_pos": { value: new THREE.Vector3(light_pos.x, light_pos.y, S.light_height) },
     "substance_color": { value: new THREE.Vector3().fromArray(S.substance_color).divideScalar(255) },
     "background_color": { value: new THREE.Vector3().fromArray(S.background_color).divideScalar(255) },
-    "shininess": { value: S.shininess }
+    "specular_color": { value: new THREE.Vector3().fromArray(S.specular_color).divideScalar(255) },
+    "shininess": { value: S.shininess },
+    "step": { value: 1.0 / S.bump }
   }
 });
 scene.add(new THREE.Mesh(new THREE.PlaneGeometry(width, height, 1, 1), material));
@@ -83,7 +85,7 @@ function onMove(clientX, clientY)
       light_move = true;
       brush_move = false;
       updateLightPosition(mouse_pos);
-      material.uniforms["light_pos"].value = new THREE.Vector3(x, y, 300);
+      material.uniforms.light_pos.value = new THREE.Vector3(x, y, S.light_height);
     }
     else
     {
@@ -263,6 +265,41 @@ function settings()
   gui.useLocalStorage = true;
   gui.remember(S);
 
+  S.anisotropy = 0.7;
+  S.simulation_iterations_per_frame = 4;
+  S.environment_noise_scale = 250;
+  S.update_environment = createEnvironment;
+  S.background_color = [229, 229, 229];
+  S.substance_color = [50, 158, 168];
+  S.specular_color = [128, 128, 128];
+  S.shininess = 64.0;
+  S.light_height = 300;
+  S.bump = 10;
+
+  S.clearLocalStorage = () => {
+    localStorage.clear();
+    location.reload();
+  };
+
+  S.toggleLight = () => {
+    if(S.toggleLight.initiated === true)
+    {
+      light_enabled = !light_enabled;
+      light_element.style.opacity = light_enabled * 0.6;
+    }
+  };
+
+  S.reset = () => {
+    reaction_diffusion_uniforms['reset'].value = true;
+    gpu_compute.compute();
+    reaction_diffusion_uniforms['reset'].value = false;
+  };
+
+  S.saveImage = () => {
+    render.save_image = true;;
+    render.savename = 'reaction-diffusion-' + gui.preset.replace(/ /g,"-").toLowerCase() + '.png';
+  };
+
   function variationProperty(value, variation, name, min0, max0, step0, min1, max1, step1)
   {
     this.val_name = name.replace(/ /g,"_").toLowerCase();
@@ -282,12 +319,6 @@ function settings()
       reaction_diffusion_uniforms[this.var_name].value = S[this.var_name];
     });
   }
-
-  S.clearLocalStorage = function() {
-    localStorage.clear();
-    location.reload();
-  }
-  gui.add(S, 'clearLocalStorage').name('Revert Local Changes');
 
   const min_diffusion_scale = 0.5;
 
@@ -313,41 +344,12 @@ function settings()
   DS_prop.value_controller.onChange(changeDS);
   DS_prop.variation_controller.onChange(changeDS);
 
-  S.anisotropy = 0.7;
-  S.simulation_iterations_per_frame = 4;
-  S.environment_noise_scale = 250;
-  S.update_environment = createEnvironment;
-  S.background_color = [229, 229, 229];
-  S.substance_color = [50, 158, 168];
-  S.shininess = 64.0;
-  S.toggleLight = function()
-  {
-    if(S.toggleLight.initiated === true)
-    {
-      light_enabled = !light_enabled;
-      light_element.style.opacity = light_enabled * 0.6;
-    }
-  }
-  S.reset = function() 
-  {
-    reaction_diffusion_uniforms['reset'].value = true;
-    gpu_compute.compute();
-    reaction_diffusion_uniforms['reset'].value = false;
-  }
-  S.saveImage = function()
-  {
-    render.save_image = true;;
-    render.savename = 'reaction-diffusion-' + gui.preset.replace(/ /g,"-").toLowerCase() + '.png';
-  }
+  environment_folder = gui.addFolder('Environment');
 
-  gui.add(S, 'anisotropy', 0.2, 0.8, 0.01).onChange(() => {
+  environment_folder.add(S, 'anisotropy', 0.2, 0.8, 0.01).onChange(() => {
     reaction_diffusion_uniforms['anisotropy'].value = S.anisotropy;
     reaction_diffusion_uniforms['anisotropic'].value = Math.abs(S.anisotropy - 0.5) > 1e-3;
   }).name('Anisotropy');
-
-  gui.add(S, 'simulation_iterations_per_frame', 1, 32, 1).name('Iterations/Frame');
-
-  environment_folder = gui.addFolder('Environment');
 
   environment_folder.add(S, 'environment_noise_scale', 1, 1000, 1).name('Noise Scale').onFinishChange(() => {
     createEnvironment(false);
@@ -355,21 +357,38 @@ function settings()
 
   environment_folder.add(S, 'update_environment').name('Update');
 
-  gui.addColor(S, 'substance_color').onChange(() => {
+  let render_folder = gui.addFolder('Render Settings')
+
+  render_folder.addColor(S, 'substance_color').onChange(() => {
     material.uniforms.substance_color.value.fromArray(S.substance_color).divideScalar(255);
   }).name("Substance");
 
-  gui.addColor(S, 'background_color').onChange(() => {
+  render_folder.addColor(S, 'background_color').onChange(() => {
     material.uniforms.background_color.value.fromArray(S.background_color).divideScalar(255);
   }).name("Background");
 
-  gui.add(S, 'shininess', 8, 256, 1).onChange(() => {
+  render_folder.addColor(S, 'specular_color').onChange(() => {
+    material.uniforms.specular_color.value.fromArray(S.specular_color).divideScalar(255);
+  }).name("Specular");
+
+  render_folder.add(S, 'bump', 0.1, 20, 0.1).onChange(() => {
+    material.uniforms.step.value = 1.0 / S.bump;
+  }).name('Bump');
+
+  render_folder.add(S, 'shininess', 8, 256, 1).onChange(() => {
     material.uniforms.shininess.value = S.shininess;
   }).name('Phong Shininess');
 
+  render_folder.add(S, 'light_height', 10, 1000, 1).onChange(() => {
+    material.uniforms.light_pos.value.z = S.light_height;
+  }).name('Light Height');
+
+  gui.add(S, 'clearLocalStorage').name('Revert Local Changes');
   gui.add(S, 'toggleLight').name('Toggle Light');
   gui.add(S, 'saveImage').name('Save Image');
   gui.add(S, 'reset').name('Clear Substances');
+
+  gui.add(S, 'simulation_iterations_per_frame', 1, 32, 1).name('Simulation Speed');
 
   gui.close();
 }

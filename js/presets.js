@@ -10,7 +10,6 @@ let gui_presets = {
         "kill": 0.06,
         "kill_variation": 0.001,
         "anisotropy": 0.7,
-        "simulation_iterations_per_frame": 4,
         "environment_noise_scale": 250,
         "substance_color": [
           168,
@@ -22,7 +21,15 @@ let gui_presets = {
           229,
           229
         ],
-        "shininess": 64
+        "specular_color": [
+          128,
+          128,
+          128
+        ],
+        "bump": 10,
+        "shininess": 64,
+        "light_height": 300,
+        "simulation_iterations_per_frame": 4
       }
     },
     "Fingerprints": {
@@ -34,7 +41,6 @@ let gui_presets = {
         "kill": 0.06,
         "kill_variation": 0,
         "anisotropy": 0.7,
-        "simulation_iterations_per_frame": 4,
         "environment_noise_scale": 250,
         "substance_color": [
           0,
@@ -46,7 +52,15 @@ let gui_presets = {
           175,
           61.42165240119485
         ],
-        "shininess": 8
+        "specular_color": [
+          128,
+          128,
+          128
+        ],
+        "bump": 10,
+        "shininess": 8,
+        "light_height": 300,
+        "simulation_iterations_per_frame": 4
       }
     },
     "Spots and Worms": {
@@ -58,7 +72,6 @@ let gui_presets = {
         "kill": 0.0618,
         "kill_variation": 0,
         "anisotropy": 0.5,
-        "simulation_iterations_per_frame": 4,
         "environment_noise_scale": 250,
         "substance_color": [
           0,
@@ -70,7 +83,15 @@ let gui_presets = {
           209.25782305971563,
           222.5
         ],
-        "shininess": 8
+        "specular_color": [
+          128,
+          128,
+          128
+        ],
+        "bump": 10,
+        "shininess": 8,
+        "light_height": 300,
+        "simulation_iterations_per_frame": 4
       }
     },
     "Cell Division": {
@@ -82,7 +103,6 @@ let gui_presets = {
         "kill": 0.063,
         "kill_variation": 0,
         "anisotropy": 0.5,
-        "simulation_iterations_per_frame": 4,
         "environment_noise_scale": 250,
         "substance_color": [
           0,
@@ -94,7 +114,15 @@ let gui_presets = {
           206.47059421913298,
           110.00010172526044
         ],
-        "shininess": 8
+        "specular_color": [
+          128,
+          128,
+          128
+        ],
+        "bump": 10,
+        "shininess": 8,
+        "light_height": 300,
+        "simulation_iterations_per_frame": 4
       }
     },
     "Buoys": {
@@ -106,7 +134,6 @@ let gui_presets = {
         "kill": 0.06,
         "kill_variation": 0,
         "anisotropy": 0.8,
-        "simulation_iterations_per_frame": 4,
         "environment_noise_scale": 250,
         "substance_color": [
           0,
@@ -118,7 +145,15 @@ let gui_presets = {
           200.44118843826598,
           212.5
         ],
-        "shininess": 8
+        "specular_color": [
+          128,
+          128,
+          128
+        ],
+        "bump": 10,
+        "shininess": 8,
+        "light_height": 300,
+        "simulation_iterations_per_frame": 4
       }
     },
     "Oil Spill": {
@@ -130,7 +165,6 @@ let gui_presets = {
         "kill": 0.06,
         "kill_variation": 0.01,
         "anisotropy": 0.2,
-        "simulation_iterations_per_frame": 4,
         "environment_noise_scale": 250,
         "substance_color": [
           0,
@@ -142,7 +176,15 @@ let gui_presets = {
           222.5,
           222.5
         ],
-        "shininess": 8
+        "specular_color": [
+          128,
+          128,
+          128
+        ],
+        "bump": 10,
+        "shininess": 8,
+        "light_height": 300,
+        "simulation_iterations_per_frame": 4
       }
     },
     "Trypophobia": {
@@ -154,7 +196,6 @@ let gui_presets = {
         "kill": 0.0581,
         "kill_variation": 0,
         "anisotropy": 0.8,
-        "simulation_iterations_per_frame": 4,
         "environment_noise_scale": 250,
         "substance_color": [
           42.004951028262866,
@@ -166,7 +207,15 @@ let gui_presets = {
           232.5,
           191.01481718175552
         ],
-        "shininess": 64
+        "specular_color": [
+          128,
+          128,
+          128
+        ],
+        "bump": 10,
+        "shininess": 64,
+        "light_height": 300,
+        "simulation_iterations_per_frame": 4
       }
     },
     "Travellers": {
@@ -178,7 +227,6 @@ let gui_presets = {
         "kill": 0.054,
         "kill_variation": 0,
         "anisotropy": 0.7,
-        "simulation_iterations_per_frame": 4,
         "environment_noise_scale": 250,
         "substance_color": [
           177.5,
@@ -190,7 +238,15 @@ let gui_presets = {
           202.5,
           142.54421458524817
         ],
-        "shininess": 64
+        "specular_color": [
+          128,
+          128,
+          128
+        ],
+        "bump": 10,
+        "shininess": 64,
+        "light_height": 300,
+        "simulation_iterations_per_frame": 4
       }
     },
     "Ocean": {
@@ -202,7 +258,6 @@ let gui_presets = {
         "kill": 0.04,
         "kill_variation": 0.001,
         "anisotropy": 0.2,
-        "simulation_iterations_per_frame": 4,
         "environment_noise_scale": 250,
         "substance_color": [
           141.92167394301472,
@@ -214,7 +269,15 @@ let gui_presets = {
           133.82181873783514,
           172.5
         ],
-        "shininess": 256
+        "specular_color": [
+          128,
+          128,
+          128
+        ],
+        "bump": 10,
+        "shininess": 256,
+        "light_height": 300,
+        "simulation_iterations_per_frame": 4
       }
     },
     "Differential Line": {
@@ -226,7 +289,6 @@ let gui_presets = {
         "kill": 0.062,
         "kill_variation": 0,
         "anisotropy": 0.4,
-        "simulation_iterations_per_frame": 6,
         "environment_noise_scale": 250,
         "substance_color": [
           90.92656752642462,
@@ -238,7 +300,15 @@ let gui_presets = {
           121.46598208734324,
           132.49999999999997
         ],
-        "shininess": 128
+        "specular_color": [
+          128,
+          128,
+          128
+        ],
+        "bump": 10,
+        "shininess": 128,
+        "light_height": 300,
+        "simulation_iterations_per_frame": 6
       }
     },
     "Voronoi": {
@@ -250,7 +320,6 @@ let gui_presets = {
         "kill": 0.0555,
         "kill_variation": 0,
         "anisotropy": 0.5,
-        "simulation_iterations_per_frame": 4,
         "environment_noise_scale": 250,
         "substance_color": [
           179.9,
@@ -262,7 +331,15 @@ let gui_presets = {
           24.9,
           13.676482555912987
         ],
-        "shininess": 64
+        "specular_color": [
+          128,
+          128,
+          128
+        ],
+        "bump": 10,
+        "shininess": 64,
+        "light_height": 300,
+        "simulation_iterations_per_frame": 4
       }
     },
     "Worms": {
@@ -274,7 +351,6 @@ let gui_presets = {
         "kill": 0.065,
         "kill_variation": 0,
         "anisotropy": 0.5,
-        "simulation_iterations_per_frame": 4,
         "environment_noise_scale": 250,
         "substance_color": [
           0,
@@ -286,7 +362,15 @@ let gui_presets = {
           227.49,
           227.49999999999997
         ],
-        "shininess": 8
+        "specular_color": [
+          128,
+          128,
+          128
+        ],
+        "bump": 10,
+        "shininess": 8,
+        "light_height": 300,
+        "simulation_iterations_per_frame": 4
       }
     },
     "Worm Mazes": {
@@ -298,7 +382,6 @@ let gui_presets = {
         "kill": 0.063,
         "kill_variation": 0,
         "anisotropy": 0.6,
-        "simulation_iterations_per_frame": 4,
         "environment_noise_scale": 250,
         "substance_color": [
           175,
@@ -310,7 +393,15 @@ let gui_presets = {
           214.5001220703125,
           214.5001220703125
         ],
-        "shininess": 64
+        "specular_color": [
+          128,
+          128,
+          128
+        ],
+        "bump": 10,
+        "shininess": 64,
+        "light_height": 300,
+        "simulation_iterations_per_frame": 4
       }
     },
     "Maze": {
@@ -322,7 +413,6 @@ let gui_presets = {
         "kill": 0.0565,
         "kill_variation": 0,
         "anisotropy": 0.5,
-        "simulation_iterations_per_frame": 4,
         "environment_noise_scale": 250,
         "substance_color": [
           0,
@@ -334,7 +424,15 @@ let gui_presets = {
           175,
           134.9135243768923
         ],
-        "shininess": 8
+        "specular_color": [
+          128,
+          128,
+          128
+        ],
+        "bump": 10,
+        "shininess": 8,
+        "light_height": 300,
+        "simulation_iterations_per_frame": 4
       }
     },
     "Unstable Maze": {
@@ -346,7 +444,6 @@ let gui_presets = {
         "kill": 0.055,
         "kill_variation": 0,
         "anisotropy": 0.5,
-        "simulation_iterations_per_frame": 4,
         "environment_noise_scale": 250,
         "substance_color": [
           22.5,
@@ -358,7 +455,15 @@ let gui_presets = {
           175,
           61.42165240119485
         ],
-        "shininess": 8
+        "specular_color": [
+          128,
+          128,
+          128
+        ],
+        "bump": 10,
+        "shininess": 8,
+        "light_height": 300,
+        "simulation_iterations_per_frame": 4
       }
     },
     "Ripping": {
@@ -370,7 +475,6 @@ let gui_presets = {
         "kill": 0.056,
         "kill_variation": 0,
         "anisotropy": 0.8,
-        "simulation_iterations_per_frame": 4,
         "environment_noise_scale": 250,
         "substance_color": [
           22.5,
@@ -382,7 +486,15 @@ let gui_presets = {
           61.42165240119485,
           61.42165240119485
         ],
-        "shininess": 8
+        "specular_color": [
+          128,
+          128,
+          128
+        ],
+        "bump": 10,
+        "shininess": 8,
+        "light_height": 300,
+        "simulation_iterations_per_frame": 4
       }
     },
     "Waves": {
@@ -394,7 +506,6 @@ let gui_presets = {
         "kill": 0.045,
         "kill_variation": 0,
         "anisotropy": 0.8,
-        "simulation_iterations_per_frame": 4,
         "environment_noise_scale": 250,
         "substance_color": [
           47.88239722158395,
@@ -406,20 +517,27 @@ let gui_presets = {
           142.5,
           142.5
         ],
-        "shininess": 128
+        "specular_color": [
+          128,
+          128,
+          128
+        ],
+        "bump": 10,
+        "shininess": 128,
+        "light_height": 300,
+        "simulation_iterations_per_frame": 4
       }
     },
     "Tensor Field Visualization": {
       "0": {
-        "diffusion_scale": 0.75,
-        "diffusion_scale_variation": 0,
+        "diffusion_scale": 2.0,
+        "diffusion_scale_variation": 1.5,
         "feed": 0.03,
         "feed_variation": 0,
-        "kill": 0.062,
+        "kill": 0.063,
         "kill_variation": 0,
         "anisotropy": 0.8,
-        "simulation_iterations_per_frame": 4,
-        "environment_noise_scale": 500,
+        "environment_noise_scale": 250,
         "substance_color": [
           0,
           0,
@@ -430,7 +548,15 @@ let gui_presets = {
           230,
           230
         ],
-        "shininess": 8
+        "specular_color": [
+          0,
+          0,
+          0
+        ],
+        "bump": 0.1,
+        "shininess": 8,
+        "light_height": 1000,
+        "simulation_iterations_per_frame": 4
       }
     }
   },
@@ -452,6 +578,11 @@ let gui_presets = {
       "folders": {}
     },
     "Environment": {
+      "preset": "Default",
+      "closed": true,
+      "folders": {}
+    },
+    "Render Settings": {
       "preset": "Default",
       "closed": true,
       "folders": {}

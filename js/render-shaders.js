@@ -22,16 +22,16 @@ let render_fragment = `
 
   uniform vec3 substance_color;
   uniform vec3 background_color;
+  uniform vec3 specular_color;
 
   uniform float shininess;
 
   // Defines the finite differences step size.
   // smaller values => larger gradient => more bump
-  const float step = 0.1;
-  const vec3 view_dir = vec3(0.0,0.0,-1.0);
+  uniform float step;
+
   const float edge0 = 0.150;
   const float edge1 = 0.190;
-  const vec3 specular_color = vec3(0.5);
   const vec3 ambient = vec3(0.1);
 
   varying vec2 texcoord;
@@ -59,7 +59,10 @@ let render_fragment = `
     vec3 texel_pos = vec3(texcoord * resolution, 0.0);
     vec3 light_dir = normalize(light_pos - texel_pos);
 
-    vec3 reflect_dir = reflect(light_dir, normal);
+    float cos_theta = dot(normal, light_dir);
+
+    // Only interested in light reflected in z-direction since view dir always is [0,0,-1]
+    float reflect_z = light_dir.z - 2.0 * cos_theta * normal.z;
 
     vec3 diffuse_color = background_color;
 
@@ -69,7 +72,7 @@ let render_fragment = `
     
     if(h > edge0)
     {
-      vec3 specular1 = pow(max(dot(view_dir, reflect_dir), 0.0), shininess) * specular_color;
+      vec3 specular1 = pow(max(-reflect_z, 0.0), shininess) * specular_color;
       if(h < edge1)
       {
         diffuse_color = mix(diffuse_color, substance_color, smoothstep(edge0, edge1, h));
@@ -82,9 +85,9 @@ let render_fragment = `
       }
     }
     
-    vec3 diffuse = max(dot(normal, light_dir), 0.0) * diffuse_color;
+    vec3 diffuse = max(cos_theta, 0.0) * diffuse_color;
 
-    gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
+    gl_FragColor = vec4((ambient + diffuse + specular), 1.0);
   }
 
 `;

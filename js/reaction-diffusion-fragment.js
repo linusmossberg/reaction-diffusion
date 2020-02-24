@@ -40,19 +40,15 @@ vec2 laplace(vec2 center)
   return 0.05 * (v00 + v20 + v02 + v22) + 0.2 * (v10 + v01 + v21 + v12) - center;
 }
 
-float p2(float v)
-{
-  return v * v;
-}
+#define p2(v) v * v
 
-vec2 anisotropicDiffusion(vec2 dir, float a, vec2 center)
+vec2 anisotropicDiffusion(vec2 dir, float a1, vec2 center)
 {
   vec2
   v00 = s(-1.0, 1.0), v10 = s(0.0, 1.0), v20 = s(1.0, 1.0),
   v01 = s(-1.0, 0.0),                    v21 = s(1.0, 0.0),
   v02 = s(-1.0,-1.0), v12 = s(0.0,-1.0), v22 = s(1.0,-1.0);
 
-  float a1 = clamp(a, 0.0, 1.0);
   float a2 = 1.0 - a1;
 
   float cos_t = dir.x;
@@ -121,7 +117,7 @@ void main()
     }
   }
 
-  //gl_FragColor.xy = clamp(gl_FragColor.xy, 0.0, 1.0);
+  gl_FragColor.xy = clamp(gl_FragColor.xy, 0.0, 1.0);
 }
 
 `;
