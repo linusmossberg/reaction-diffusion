@@ -530,8 +530,8 @@ let gui_presets = {
     },
     "Tensor Field Visualization": {
       "0": {
-        "diffusion_scale": 2.0,
-        "diffusion_scale_variation": 1.5,
+        "diffusion_scale": 1.5,
+        "diffusion_scale_variation": 1.0,
         "feed": 0.03,
         "feed_variation": 0,
         "kill": 0.063,
@@ -539,14 +539,14 @@ let gui_presets = {
         "anisotropy": 0.8,
         "environment_noise_scale": 250,
         "substance_color": [
-          0,
-          0,
-          0
-        ],
-        "background_color": [
           230,
           230,
           230
+        ],
+        "background_color": [
+          0,
+          0,
+          0
         ],
         "specular_color": [
           0,

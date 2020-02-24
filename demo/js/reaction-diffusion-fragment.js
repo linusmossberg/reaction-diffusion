@@ -23,13 +23,18 @@ uniform bool reset;
 const vec2 D = vec2(1, 0.5);
 const float Dt = 1.0;
 
+#define p2(v) v * v
+
 // Sampling function with offset around current texel
 vec2 s(float x_offset, float y_offset)
 {
   return texture2D(reaction_diffusion, (gl_FragCoord.xy + vec2(x_offset, y_offset)) / resolution).xy;
 }
 
-// Finite differences laplace operator
+/****************************************************
+Finite differences laplace operator with diagonals included based on 
+https://www.karlsims.com/rd.html
+****************************************************/
 vec2 laplace(vec2 center)
 {
   vec2
@@ -40,8 +45,28 @@ vec2 laplace(vec2 center)
   return 0.05 * (v00 + v20 + v02 + v22) + 0.2 * (v10 + v01 + v21 + v12) - center;
 }
 
-#define p2(v) v * v
+/****************************************************
+Based on the anisotropic diffusion mask from the paper:
 
+Reaction-Diffusion Textures - Andrew Witkin and Michael Kassy
+http://www.cs.cmu.edu/~jkh/462_s07/reaction_diffusion.pdf
+
+but with a few changes. a1 and a2 controls the major axis lengths/eigenvalues of 
+the diffusion tensor, but they always add up to 1. The input a1 therefore 
+controls the anisotropy or "ellipticity" of the diffusion tensor, but the amount 
+of total diffusion always stays approximately the same.
+
+a1 = 0.5 => no anisotropy
+a1 > 0.5 => more diffusion parallel to dir vector
+a1 < 0.5 => more diffusion orthogonal to dir vector
+
+The total amount of diffusion is then controled later by another variable 
+"diffusion_scale".
+
+I've also changed the mask to make it the general case of the above laplace 
+operator which includes the diagonals, which makes them equivalent at a1 = 0.5.
+
+****************************************************/
 vec2 anisotropicDiffusion(vec2 dir, float a1, vec2 center)
 {
   vec2
