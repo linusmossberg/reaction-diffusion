@@ -67,6 +67,7 @@ reaction_diffusion_uniforms['diffusion_scale_variation'] = { value: Settings.dif
 reaction_diffusion_uniforms['anisotropy'] = { value: Settings.anisotropy };
 reaction_diffusion_uniforms['reset'] = { value: false };
 reaction_diffusion_uniforms['anisotropic'] = { value: Math.abs(Settings.anisotropy - 0.5) > 1e-3 };
+reaction_diffusion_uniforms['use_separate_directions'] = { value: Settings.use_separate_directions };
 
 let light_element = document.getElementById('light');
 let light_half_dim = light_element.clientWidth / 2;
@@ -137,16 +138,22 @@ function createEnvironment(update = true)
 
   let simplex = new THREE.SimplexNoise();
 
+  let offsets = new Array(4);
+  for (let i = 0; i < 4; i++)
+  {
+    offsets[i] = (i + Math.random()) * 1000;
+  }
+
   let pixels = new Float32Array(simulation_width * simulation_height * 4);
   let p = 0;
   for (let y = 0; y < simulation_height; y++)
   {
     for (let x = 0; x < simulation_width; x++ )
     {
-      pixels[p + 0] = simplex.noise3d(x / Settings.environment_noise_scale, y / Settings.environment_noise_scale, 0);
-      pixels[p + 1] = simplex.noise3d(x / Settings.environment_noise_scale, y / Settings.environment_noise_scale, 1000);
-      pixels[p + 2] = simplex.noise3d(x / Settings.environment_noise_scale, y / Settings.environment_noise_scale, 2000);
-      pixels[p + 3] = (1 + simplex.noise3d(x / Settings.environment_noise_scale, y / Settings.environment_noise_scale, 3000)) * Math.PI;
+      for (let i = 0; i < 4; i++)
+      {
+        pixels[p + i] = simplex.noise3d(x / Settings.environment_noise_scale, y / Settings.environment_noise_scale, offsets[i]);
+      }
       p += 4;
     }
   }

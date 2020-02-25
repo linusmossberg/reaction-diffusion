@@ -11,6 +11,7 @@ let gui_presets = {
         "kill_variation": 0.001,
         "anisotropy": 0.7,
         "environment_noise_scale": 250,
+        "use_separate_directions": false,
         "substance_color": [
           168,
           0,
@@ -42,6 +43,7 @@ let gui_presets = {
         "kill_variation": 0,
         "anisotropy": 0.7,
         "environment_noise_scale": 250,
+        "use_separate_directions": false,
         "substance_color": [
           0,
           0,
@@ -73,6 +75,7 @@ let gui_presets = {
         "kill_variation": 0,
         "anisotropy": 0.5,
         "environment_noise_scale": 250,
+        "use_separate_directions": false,
         "substance_color": [
           0,
           0,
@@ -104,6 +107,7 @@ let gui_presets = {
         "kill_variation": 0,
         "anisotropy": 0.5,
         "environment_noise_scale": 250,
+        "use_separate_directions": false,
         "substance_color": [
           0,
           0,
@@ -135,6 +139,7 @@ let gui_presets = {
         "kill_variation": 0,
         "anisotropy": 0.8,
         "environment_noise_scale": 250,
+        "use_separate_directions": false,
         "substance_color": [
           0,
           0,
@@ -166,6 +171,7 @@ let gui_presets = {
         "kill_variation": 0.01,
         "anisotropy": 0.2,
         "environment_noise_scale": 250,
+        "use_separate_directions": false,
         "substance_color": [
           0,
           0,
@@ -197,6 +203,7 @@ let gui_presets = {
         "kill_variation": 0,
         "anisotropy": 0.8,
         "environment_noise_scale": 250,
+        "use_separate_directions": false,
         "substance_color": [
           42.004951028262866,
           98.94146770754492,
@@ -228,6 +235,7 @@ let gui_presets = {
         "kill_variation": 0,
         "anisotropy": 0.7,
         "environment_noise_scale": 250,
+        "use_separate_directions": false,
         "substance_color": [
           177.5,
           65.77949673521753,
@@ -259,6 +267,7 @@ let gui_presets = {
         "kill_variation": 0.001,
         "anisotropy": 0.2,
         "environment_noise_scale": 250,
+        "use_separate_directions": false,
         "substance_color": [
           141.92167394301472,
           201.62862916306224,
@@ -290,6 +299,7 @@ let gui_presets = {
         "kill_variation": 0,
         "anisotropy": 0.4,
         "environment_noise_scale": 250,
+        "use_separate_directions": false,
         "substance_color": [
           90.92656752642462,
           202.5,
@@ -321,6 +331,7 @@ let gui_presets = {
         "kill_variation": 0,
         "anisotropy": 0.5,
         "environment_noise_scale": 250,
+        "use_separate_directions": false,
         "substance_color": [
           179.9,
           169.41176470588235,
@@ -352,6 +363,7 @@ let gui_presets = {
         "kill_variation": 0,
         "anisotropy": 0.5,
         "environment_noise_scale": 250,
+        "use_separate_directions": false,
         "substance_color": [
           0,
           0,
@@ -383,6 +395,7 @@ let gui_presets = {
         "kill_variation": 0,
         "anisotropy": 0.6,
         "environment_noise_scale": 250,
+        "use_separate_directions": false,
         "substance_color": [
           175,
           0,
@@ -414,6 +427,7 @@ let gui_presets = {
         "kill_variation": 0,
         "anisotropy": 0.5,
         "environment_noise_scale": 250,
+        "use_separate_directions": false,
         "substance_color": [
           0,
           0,
@@ -445,6 +459,7 @@ let gui_presets = {
         "kill_variation": 0,
         "anisotropy": 0.5,
         "environment_noise_scale": 250,
+        "use_separate_directions": false,
         "substance_color": [
           22.5,
           10.634955699881061,
@@ -476,6 +491,7 @@ let gui_presets = {
         "kill_variation": 0,
         "anisotropy": 0.8,
         "environment_noise_scale": 250,
+        "use_separate_directions": false,
         "substance_color": [
           22.5,
           11.480975827543798,
@@ -507,6 +523,7 @@ let gui_presets = {
         "kill_variation": 0,
         "anisotropy": 0.8,
         "environment_noise_scale": 250,
+        "use_separate_directions": false,
         "substance_color": [
           47.88239722158395,
           87.25087026136285,
@@ -538,6 +555,7 @@ let gui_presets = {
         "kill_variation": 0,
         "anisotropy": 0.8,
         "environment_noise_scale": 250,
+        "use_separate_directions": false,
         "substance_color": [
           230,
           230,

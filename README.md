@@ -2,7 +2,7 @@
 
 This is an interactive real-time reaction-diffusion system running in the browser using WebGL.
 
-<h2><a href="https://linusmossberg.github.io/reaction-diffusion/demo/">Live Demo</a></h2>
+Live demo: <https://linusmossberg.github.io/reaction-diffusion/demo/>
 
 ## Presets
 I've created the following presets which can be selected at the top of the controls menu. The images are just the steady-states of the presets with random initial states and environments. Interacting and watching the growth process and dynamic behaviours in the live demo is much more interesting.

@@ -19,6 +19,7 @@ function Settings()
   Settings.shininess = 64.0;
   Settings.light_height = 300;
   Settings.bump = 10;
+  Settings.use_separate_directions = false;
 
   Settings.clearLocalStorage = () => {
     localStorage.clear();
@@ -96,6 +97,10 @@ function Settings()
   environment_folder.add(Settings, 'environment_noise_scale', 1, 1000, 1).name('Noise Scale').onFinishChange(() => {
     createEnvironment(false);
   });
+
+  environment_folder.add(Settings, 'use_separate_directions').onChange(() => {
+    reaction_diffusion_uniforms.use_separate_directions.value = Settings.use_separate_directions;
+  }).name('Separate Directions');
 
   environment_folder.add(Settings, 'update_environment').name('Update');
 

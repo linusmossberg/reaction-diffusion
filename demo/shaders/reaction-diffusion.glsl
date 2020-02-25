@@ -20,6 +20,7 @@ uniform float diffusion_scale_variation;
 
 uniform float anisotropy;
 uniform bool anisotropic;
+uniform bool use_separate_directions;
 
 uniform vec2 mouse_pos;
 uniform bool mouse_down;
@@ -30,6 +31,7 @@ const vec2 D = vec2(1, 0.5);
 const float Dt = 1.0;
 
 #define p2(v) v * v
+#define PI 3.14159265358979323846
 
 // Sampling function with offset around current texel
 vec2 s(float x_offset, float y_offset)
@@ -41,6 +43,7 @@ vec2 s(float x_offset, float y_offset)
 Finite differences laplace operator with diagonals included based on 
 https://www.karlsims.com/rd.html
 ****************************************************/
+const float diagonal = 0.05, adjacent = 0.2;
 vec2 laplace(vec2 center)
 {
   vec2
@@ -48,7 +51,7 @@ vec2 laplace(vec2 center)
   v01 = s(-1.0, 0.0),                    v21 = s(1.0, 0.0),
   v02 = s(-1.0,-1.0), v12 = s(0.0,-1.0), v22 = s(1.0,-1.0);
 
-  return 0.05 * (v00 + v20 + v02 + v22) + 0.2 * (v10 + v01 + v21 + v12) - center;
+  return diagonal * (v00 + v20 + v02 + v22) + adjacent * (v10 + v01 + v21 + v12) - center;
 }
 
 /****************************************************
@@ -72,26 +75,29 @@ I've also changed the mask to make it the general case of the above laplace
 operator which includes the diagonals, which makes them equivalent at a1 = 0.5.
 
 ****************************************************/
-vec2 anisotropicDiffusion(vec2 dir, float a1, vec2 center)
+vec2 anisotropicDiffusion(vec2 angles, float a1, vec2 center)
 {
   vec2
   v00 = s(-1.0, 1.0), v10 = s(0.0, 1.0), v20 = s(1.0, 1.0),
   v01 = s(-1.0, 0.0),                    v21 = s(1.0, 0.0),
   v02 = s(-1.0,-1.0), v12 = s(0.0,-1.0), v22 = s(1.0,-1.0);
 
+  vec2 cos_t = cos(angles);
+  vec2 sin_t = sin(angles);
+
   float a2 = 1.0 - a1;
 
-  float cos_t = dir.x;
-  float sin_t = dir.y;
-  float cos2_t = p2(cos_t);
-  float sin2_t = p2(sin_t);
+  //float cos_t = dir.x;
+  //float sin_t = dir.y;
+  vec2 cos2_t = p2(cos_t);
+  vec2 sin2_t = p2(sin_t);
 
-  float d = ((a2 - a1) * p2(cos_t * sin_t)) / 2.0;
-  float h = (a1 * cos2_t + a2 * sin2_t) / 2.0 - 0.05;
-  float v = (a2 * cos2_t + a1 * sin2_t) / 2.0 - 0.05;
+  vec2 d = ((a2 - a1) * p2(cos_t * sin_t)) / 2.0;
+  vec2 h = (a1 * cos2_t + a2 * sin2_t) / 2.0 - diagonal;
+  vec2 v = (a2 * cos2_t + a1 * sin2_t) / 2.0 - diagonal;
 
-  vec2 result = (-d+0.05) * (v00 + v22) +
-                ( d+0.05) * (v20 + v02) +
+  vec2 result = (-d+diagonal) * (v00 + v22) +
+                ( d+diagonal) * (v20 + v02) +
                 h * (v01 + v21) +
                 v * (v10 + v12)
                 - center;
@@ -126,8 +132,16 @@ void main()
     vec2 diffusion;
     if(anisotropic)
     {
-      vec2 direction = vec2(cos(env[3]), sin(env[3]));
-      diffusion = anisotropicDiffusion(direction, anisotropy, old) * (D * DS);
+      vec2 angles;
+      if(use_separate_directions)
+      {
+        angles = (1.0 + vec2(env[3], env[0])) * PI;
+      }
+      else
+      {
+        angles = (1.0 + vec2(env[3], env[3])) * PI;
+      }
+      diffusion = anisotropicDiffusion(angles, anisotropy, old) * (D * DS);
     }
     else
     {
