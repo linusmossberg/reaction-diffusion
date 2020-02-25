@@ -1,4 +1,12 @@
-// Use GLSL highlighting
+/****************************************************
+These are the vertex and fragment shaders used to render
+the substance state texture reaction_diffusion that 
+the Reaction-Diffusion simulation results in. The vertex
+shader is just a minimal pass-through shader, while the
+fragment shader computes normals from the gradient of the
+reaction_diffusion texture and uses these to produce
+Phong-illuminated results.
+****************************************************/
 
 let render_vertex = `
 
@@ -61,9 +69,6 @@ let render_fragment = `
 
     float cos_theta = dot(normal, light_dir);
 
-    // Only interested in light reflected in z-direction since view dir always is [0,0,-1]
-    float reflect_z = light_dir.z - 2.0 * cos_theta * normal.z;
-
     vec3 diffuse_color = background_color;
 
     float h = height(0.0, 0.0);
@@ -72,6 +77,8 @@ let render_fragment = `
     
     if(h > edge0)
     {
+      // Only interested in light reflected in z-directon since view direction always is [0,0,-1]
+      float reflect_z = light_dir.z - 2.0 * cos_theta * normal.z;
       vec3 specular1 = pow(max(-reflect_z, 0.0), shininess) * specular_color;
       if(h < edge1)
       {

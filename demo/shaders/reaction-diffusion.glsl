@@ -1,4 +1,10 @@
-// Use GLSL highlighting
+/****************************************************
+This is a fragment shader that, given the substance state 
+texture reaction_diffusion, computes the next iteration in the 
+Reaction-Diffusion simulation. The reaction_diffusion texture 
+uniform is passed automatically by THREE.GPUComputationRenderer, 
+which is used to handle buffer-swapping.
+****************************************************/
 
 let reaction_diffusion_fragment = `
 
@@ -60,8 +66,7 @@ a1 = 0.5 => no anisotropy
 a1 > 0.5 => more diffusion parallel to dir vector
 a1 < 0.5 => more diffusion orthogonal to dir vector
 
-The total amount of diffusion is then controled later by another variable 
-"diffusion_scale".
+The total amount of diffusion is then controled later by the variable diffusion_scale.
 
 I've also changed the mask to make it the general case of the above laplace 
 operator which includes the diagonals, which makes them equivalent at a1 = 0.5.
@@ -141,8 +146,6 @@ void main()
       }
     }
   }
-
-  gl_FragColor.xy = clamp(gl_FragColor.xy, 0.0, 1.0);
 }
 
 `;
