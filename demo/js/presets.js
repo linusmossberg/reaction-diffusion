@@ -11,7 +11,7 @@ let gui_presets = {
         "kill_variation": 0.001,
         "anisotropy": 0.7,
         "environment_noise_scale": 250,
-        "use_separate_directions": false,
+        "separate_fields": false,
         "substance_color": [
           168,
           0,
@@ -33,6 +33,38 @@ let gui_presets = {
         "simulation_iterations_per_frame": 4
       }
     },
+    "Dunes/Zebra": {
+      "0": {
+        "diffusion_scale": 1,
+        "diffusion_scale_variation": 0,
+        "feed": 0.05,
+        "feed_variation": 0,
+        "kill": 0.061,
+        "kill_variation": 0,
+        "anisotropy": 0.8,
+        "environment_noise_scale": 700,
+        "separate_fields": true,
+        "substance_color": [
+          42.5,
+          34.436283485562186,
+          15.083363850911455
+        ],
+        "background_color": [
+          152.5,
+          134.62920684990445,
+          76.54912911209405
+        ],
+        "specular_color": [
+          12.5,
+          12.5,
+          12.5
+        ],
+        "bump": 5,
+        "shininess": 8,
+        "light_height": 300,
+        "simulation_iterations_per_frame": 4
+      }
+    },
     "Fingerprints": {
       "0": {
         "diffusion_scale": 1,
@@ -43,7 +75,7 @@ let gui_presets = {
         "kill_variation": 0,
         "anisotropy": 0.7,
         "environment_noise_scale": 250,
-        "use_separate_directions": false,
+        "separate_fields": false,
         "substance_color": [
           0,
           0,
@@ -75,7 +107,7 @@ let gui_presets = {
         "kill_variation": 0,
         "anisotropy": 0.5,
         "environment_noise_scale": 250,
-        "use_separate_directions": false,
+        "separate_fields": false,
         "substance_color": [
           0,
           0,
@@ -107,7 +139,7 @@ let gui_presets = {
         "kill_variation": 0,
         "anisotropy": 0.5,
         "environment_noise_scale": 250,
-        "use_separate_directions": false,
+        "separate_fields": false,
         "substance_color": [
           0,
           0,
@@ -139,7 +171,7 @@ let gui_presets = {
         "kill_variation": 0,
         "anisotropy": 0.8,
         "environment_noise_scale": 250,
-        "use_separate_directions": false,
+        "separate_fields": false,
         "substance_color": [
           0,
           0,
@@ -161,6 +193,38 @@ let gui_presets = {
         "simulation_iterations_per_frame": 4
       }
     },
+    "Currents": {
+      "0": {
+        "diffusion_scale": 1,
+        "diffusion_scale_variation": 0,
+        "feed": 0.08,
+        "feed_variation": 0,
+        "kill": 0.06,
+        "kill_variation": 0,
+        "anisotropy": 0.8,
+        "environment_noise_scale": 500,
+        "separate_fields": true,
+        "substance_color": [
+          10,
+          10,
+          10
+        ],
+        "background_color": [
+          152.5,
+          81.01682739961791,
+          76.54912911209404
+        ],
+        "specular_color": [
+          0,
+          0,
+          0
+        ],
+        "bump": 3,
+        "shininess": 8,
+        "light_height": 300,
+        "simulation_iterations_per_frame": 4
+      }
+    },
     "Oil Spill": {
       "0": {
         "diffusion_scale": 2,
@@ -171,7 +235,7 @@ let gui_presets = {
         "kill_variation": 0.01,
         "anisotropy": 0.2,
         "environment_noise_scale": 250,
-        "use_separate_directions": false,
+        "separate_fields": false,
         "substance_color": [
           0,
           0,
@@ -203,7 +267,7 @@ let gui_presets = {
         "kill_variation": 0,
         "anisotropy": 0.8,
         "environment_noise_scale": 250,
-        "use_separate_directions": false,
+        "separate_fields": false,
         "substance_color": [
           42.004951028262866,
           98.94146770754492,
@@ -235,7 +299,7 @@ let gui_presets = {
         "kill_variation": 0,
         "anisotropy": 0.7,
         "environment_noise_scale": 250,
-        "use_separate_directions": false,
+        "separate_fields": false,
         "substance_color": [
           177.5,
           65.77949673521753,
@@ -267,7 +331,7 @@ let gui_presets = {
         "kill_variation": 0.001,
         "anisotropy": 0.2,
         "environment_noise_scale": 250,
-        "use_separate_directions": false,
+        "separate_fields": false,
         "substance_color": [
           141.92167394301472,
           201.62862916306224,
@@ -299,7 +363,7 @@ let gui_presets = {
         "kill_variation": 0,
         "anisotropy": 0.4,
         "environment_noise_scale": 250,
-        "use_separate_directions": false,
+        "separate_fields": false,
         "substance_color": [
           90.92656752642462,
           202.5,
@@ -331,7 +395,7 @@ let gui_presets = {
         "kill_variation": 0,
         "anisotropy": 0.5,
         "environment_noise_scale": 250,
-        "use_separate_directions": false,
+        "separate_fields": false,
         "substance_color": [
           179.9,
           169.41176470588235,
@@ -363,7 +427,7 @@ let gui_presets = {
         "kill_variation": 0,
         "anisotropy": 0.5,
         "environment_noise_scale": 250,
-        "use_separate_directions": false,
+        "separate_fields": false,
         "substance_color": [
           0,
           0,
@@ -395,7 +459,7 @@ let gui_presets = {
         "kill_variation": 0,
         "anisotropy": 0.6,
         "environment_noise_scale": 250,
-        "use_separate_directions": false,
+        "separate_fields": false,
         "substance_color": [
           175,
           0,
@@ -427,7 +491,7 @@ let gui_presets = {
         "kill_variation": 0,
         "anisotropy": 0.5,
         "environment_noise_scale": 250,
-        "use_separate_directions": false,
+        "separate_fields": false,
         "substance_color": [
           0,
           0,
@@ -459,7 +523,7 @@ let gui_presets = {
         "kill_variation": 0,
         "anisotropy": 0.5,
         "environment_noise_scale": 250,
-        "use_separate_directions": false,
+        "separate_fields": false,
         "substance_color": [
           22.5,
           10.634955699881061,
@@ -491,7 +555,7 @@ let gui_presets = {
         "kill_variation": 0,
         "anisotropy": 0.8,
         "environment_noise_scale": 250,
-        "use_separate_directions": false,
+        "separate_fields": false,
         "substance_color": [
           22.5,
           11.480975827543798,
@@ -523,7 +587,7 @@ let gui_presets = {
         "kill_variation": 0,
         "anisotropy": 0.8,
         "environment_noise_scale": 250,
-        "use_separate_directions": false,
+        "separate_fields": false,
         "substance_color": [
           47.88239722158395,
           87.25087026136285,
@@ -555,7 +619,7 @@ let gui_presets = {
         "kill_variation": 0,
         "anisotropy": 0.8,
         "environment_noise_scale": 250,
-        "use_separate_directions": false,
+        "separate_fields": false,
         "substance_color": [
           230,
           230,

@@ -6,7 +6,10 @@ function Settings()
 
   gui.width = 300;
 
-  gui.useLocalStorage = true;
+  // TODO: Start using local storage when finnished 
+  gui.useLocalStorage = false;
+  localStorage.clear();
+
   gui.remember(Settings);
 
   Settings.anisotropy = 0.7;
@@ -19,12 +22,12 @@ function Settings()
   Settings.shininess = 64.0;
   Settings.light_height = 300;
   Settings.bump = 10;
-  Settings.use_separate_directions = false;
+  Settings.separate_fields = false;
 
-  Settings.clearLocalStorage = () => {
-    localStorage.clear();
-    location.reload();
-  };
+  // Settings.clearLocalStorage = () => {
+  //   localStorage.clear();
+  //   location.reload();
+  // };
 
   Settings.toggleLight = () => {
     if(Settings.toggleLight.initiated === true)
@@ -42,7 +45,7 @@ function Settings()
 
   Settings.saveImage = () => {
     render.save_image = true;
-    render.savename = 'reaction-diffusion-' + gui.preset.replace(/ /g,"-").toLowerCase() + '.png';
+    render.savename = 'reaction-diffusion-' + gui.preset.replace(/ /g,"-").replace(/\//g,"-").toLowerCase() + '.png';
   };
 
   function variationProperty(value, variation, name, min0, max0, step0, min1, max1, step1)
@@ -91,16 +94,15 @@ function Settings()
 
   environment_folder.add(Settings, 'anisotropy', 0.2, 0.8, 0.01).onChange(() => {
     reaction_diffusion_uniforms['anisotropy'].value = Settings.anisotropy;
-    reaction_diffusion_uniforms['anisotropic'].value = Math.abs(Settings.anisotropy - 0.5) > 1e-3;
   }).name('Anisotropy');
 
   environment_folder.add(Settings, 'environment_noise_scale', 1, 1000, 1).name('Noise Scale').onFinishChange(() => {
     createEnvironment(false);
   });
 
-  environment_folder.add(Settings, 'use_separate_directions').onChange(() => {
-    reaction_diffusion_uniforms.use_separate_directions.value = Settings.use_separate_directions;
-  }).name('Separate Directions');
+  environment_folder.add(Settings, 'separate_fields').onChange(() => {
+    reaction_diffusion_uniforms.separate_fields.value = Settings.separate_fields;
+  }).name('Separate Fields');
 
   environment_folder.add(Settings, 'update_environment').name('Update');
 
@@ -130,7 +132,7 @@ function Settings()
     material.uniforms.light_pos.value.z = Settings.light_height;
   }).name('Light Height');
 
-  gui.add(Settings, 'clearLocalStorage').name('Revert Local Changes');
+  //gui.add(Settings, 'clearLocalStorage').name('Revert Local Changes');
   gui.add(Settings, 'toggleLight').name('Toggle Light');
   gui.add(Settings, 'saveImage').name('Save Image');
   gui.add(Settings, 'reset').name('Clear Substances');

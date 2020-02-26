@@ -8,6 +8,8 @@ Live demo: <https://linusmossberg.github.io/reaction-diffusion/demo/>
 I've created the following presets which can be selected at the top of the controls menu. The images are just the steady-states of the presets with random initial states and environments. Interacting and watching the growth process and dynamic behaviours in the live demo is much more interesting.
 ### Default
 ![](data/reaction-diffusion-default.jpg)
+### Dunes/Zebra
+![](data/reaction-diffusion-dunes-zebra.jpg)
 ### Fingerprints
 ![](data/reaction-diffusion-fingerprints.jpg)
 ### Spots and Worms
@@ -16,6 +18,8 @@ I've created the following presets which can be selected at the top of the contr
 ![](data/reaction-diffusion-cell-division.jpg)
 ### Bouys
 ![](data/reaction-diffusion-buoys.jpg)
+### Currents
+![](data/reaction-diffusion-currents.jpg)
 ### Oil Spill
 ![](data/reaction-diffusion-oil-spill.jpg)
 ### Trypophobia

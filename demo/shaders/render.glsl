@@ -25,7 +25,6 @@ let render_vertex = `
 let render_fragment = `
 
   uniform sampler2D reaction_diffusion;
-  uniform vec2 resolution;
   uniform vec3 light_pos;
 
   uniform vec3 substance_color;

@@ -28,13 +28,15 @@ let material = new THREE.ShaderMaterial
   fragmentShader: render_fragment,
   uniforms: { 
     "reaction_diffusion": { value: null }, 
-    "resolution": { value: new THREE.Vector2(simulation_width, simulation_height) },
     "light_pos": { value: new THREE.Vector3(light_pos.x, light_pos.y, Settings.light_height) },
     "substance_color": { value: new THREE.Vector3().fromArray(Settings.substance_color).divideScalar(255) },
     "background_color": { value: new THREE.Vector3().fromArray(Settings.background_color).divideScalar(255) },
     "specular_color": { value: new THREE.Vector3().fromArray(Settings.specular_color).divideScalar(255) },
     "shininess": { value: Settings.shininess },
     "step": { value: 1.0 / Settings.bump }
+  },
+  defines: {
+    resolution: 'vec2(' + simulation_width + ', ' + simulation_height + ')'
   }
 });
 scene.add(new THREE.Mesh(new THREE.PlaneGeometry(width, height, 1, 1), material));
@@ -66,8 +68,7 @@ reaction_diffusion_uniforms['kill_variation'] = { value: Settings.kill_variation
 reaction_diffusion_uniforms['diffusion_scale_variation'] = { value: Settings.diffusion_scale_variation };
 reaction_diffusion_uniforms['anisotropy'] = { value: Settings.anisotropy };
 reaction_diffusion_uniforms['reset'] = { value: false };
-reaction_diffusion_uniforms['anisotropic'] = { value: Math.abs(Settings.anisotropy - 0.5) > 1e-3 };
-reaction_diffusion_uniforms['use_separate_directions'] = { value: Settings.use_separate_directions };
+reaction_diffusion_uniforms['separate_fields'] = { value: Settings.separate_fields };
 
 let light_element = document.getElementById('light');
 let light_half_dim = light_element.clientWidth / 2;
