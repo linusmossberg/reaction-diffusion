@@ -1,9 +1,8 @@
 /****************************************************
-This is a fragment shader that, given the substance state 
-texture reaction_diffusion, computes the next iteration in the 
-Reaction-Diffusion simulation. The reaction_diffusion texture 
-uniform is passed automatically by THREE.GPUComputationRenderer, 
-which is used to handle buffer-swapping.
+This is a fragment shader that computes the next iteration in the 
+reaction-diffusion simulation from the substance state texture 
+reaction_diffusion. The reaction_diffusion texture uniform is 
+passed automatically by THREE.GPUComputationRenderer.
 ****************************************************/
 
 let reaction_diffusion_fragment = `

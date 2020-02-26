@@ -1,14 +1,15 @@
 function Settings()
 {
+  // TODO: Start using local storage when finished
+  localStorage.clear();
+
   let gui = new dat.GUI({
     load: gui_presets
   });
 
   gui.width = 300;
 
-  // TODO: Start using local storage when finnished 
   gui.useLocalStorage = false;
-  localStorage.clear();
 
   gui.remember(Settings);
 
