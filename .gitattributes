@@ -1,0 +1,2 @@
+demo/** linguist-vendored=false
+demo/js/external/** linguist-vendored=true
