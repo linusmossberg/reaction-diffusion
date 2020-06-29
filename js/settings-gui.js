@@ -1,15 +1,12 @@
 function Settings()
 {
-  // TODO: Start using local storage when finished
-  localStorage.clear();
-
   let gui = new dat.GUI({
     load: gui_presets
   });
 
   gui.width = 300;
 
-  gui.useLocalStorage = false;
+  gui.useLocalStorage = true;
 
   gui.remember(Settings);
 
@@ -25,10 +22,10 @@ function Settings()
   Settings.bump = 10;
   Settings.separate_fields = false;
 
-  // Settings.clearLocalStorage = () => {
-  //   localStorage.clear();
-  //   location.reload();
-  // };
+  Settings.clearLocalStorage = () => {
+    localStorage.clear();
+    location.reload();
+  };
 
   Settings.toggleLight = () => {
     if(Settings.toggleLight.initiated === true)
@@ -133,7 +130,7 @@ function Settings()
     material.uniforms.light_pos.value.z = Settings.light_height;
   }).name('Light Height');
 
-  //gui.add(Settings, 'clearLocalStorage').name('Revert Local Changes');
+  gui.add(Settings, 'clearLocalStorage').name('Revert Local Changes');
   gui.add(Settings, 'toggleLight').name('Toggle Light');
   gui.add(Settings, 'saveImage').name('Save Image');
   gui.add(Settings, 'reset').name('Clear Substances');

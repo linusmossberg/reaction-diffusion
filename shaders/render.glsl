@@ -55,8 +55,8 @@ let render_fragment = `
     h01 = height(-1.0, 0.0),                       h21 = height(1.0, 0.0),
                             h12 = height(0.0,-1.0);
 
-    return cross(normalize(vec3(step, 0.0, h21 - h01)),
-                 normalize(vec3(0.0, step, h10 - h12)));
+    return normalize(cross(vec3(step, 0.0, h21 - h01),
+                           vec3(0.0, step, h10 - h12)));
   }
 
   void main() 
