@@ -3,7 +3,12 @@ body {
 }
 
 canvas { 
-  display: block; 
+  display: block;
+}
+
+@font-face {
+  font-family: 'iconfont';
+  src: url('iconfont.ttf') format('truetype');
 }
 
 #draw {
@@ -25,4 +30,14 @@ canvas {
   pointer-events: none;
   cursor: move;
   width: 75px;
+}
+
+.icon {
+  font-family: 'iconfont';
+  font-size: 150%;
+  float: right;
+}
+
+.github:before {
+  content: 'b';
 }

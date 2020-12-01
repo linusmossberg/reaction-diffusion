@@ -22,6 +22,10 @@ function Settings()
   Settings.bump = 10;
   Settings.separate_fields = false;
 
+  Settings.openGithub = () => {
+    window.open('https://github.com/linusmossberg/reaction-diffusion');
+  };
+
   Settings.clearLocalStorage = () => {
     localStorage.clear();
     location.reload();
@@ -130,12 +134,16 @@ function Settings()
     material.uniforms.light_pos.value.z = Settings.light_height;
   }).name('Light Height');
 
-  gui.add(Settings, 'clearLocalStorage').name('Revert Local Changes');
+  let github = gui.add(Settings, 'openGithub').name('Source Code');
+  github.__li.style.borderLeft = '3px solid #fcac4e';
+  let github_icon = document.createElement('span');
+  github.domElement.parentElement.appendChild(github_icon);
+  github_icon.className = 'icon github';
+
   gui.add(Settings, 'toggleLight').name('Toggle Light');
   gui.add(Settings, 'saveImage').name('Save Image');
+  gui.add(Settings, 'clearLocalStorage').name('Restore Defaults');
   gui.add(Settings, 'reset').name('Clear Substances');
 
   gui.add(Settings, 'simulation_iterations_per_frame', 1, 64, 1).name('Simulation Speed');
-
-  gui.close();
 }
