@@ -101,9 +101,11 @@ void main()
   // New substance concentrations
   gl_FragColor.xy = old + (reaction + dissipation + diffusion) * dt;
 
-  if(mouse_down && gl_FragColor.y <= 0.2)
+  // Add substance 1 by drawing
+  if(mouse_down)
   {
-    gl_FragColor.y += max((10.0 - distance(gl_FragCoord.xy, mouse_pos)), 0.0) / 56.0;
+    const float R = 10.0;
+    gl_FragColor[1] += max(0.25 - old[1], 0.0) * max((R - distance(gl_FragCoord.xy, mouse_pos)), 0.0) / R;
   }
 
   if(reset)
