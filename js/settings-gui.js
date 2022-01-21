@@ -10,7 +10,7 @@ function Settings()
 
   gui.remember(Settings);
 
-  Settings.anisotropy = 0.7;
+  Settings.anisotropy = 0.8;
   Settings.simulation_iterations_per_frame = 4;
   Settings.environment_noise_scale = 250;
   Settings.update_environment = createEnvironment;
@@ -19,7 +19,7 @@ function Settings()
   Settings.specular_color = [128, 128, 128];
   Settings.shininess = 64.0;
   Settings.light_height = 300;
-  Settings.bump = 10;
+  Settings.bump = 20;
   Settings.separate_fields = false;
 
   Settings.openGithub = () => {
@@ -68,9 +68,9 @@ function Settings()
     }).name('Variation');
   }
 
-  const min_diffusion_scale = 0.5;
+  const min_diffusion_scale = 0.125;
 
-  let DS_prop = new variationProperty(2.5, 1.5, "Diffusion Scale", min_diffusion_scale, 10, 0.01, 0, 2.5 - min_diffusion_scale, 0.01);
+  let DS_prop = new variationProperty(0.625, 0.375, "Diffusion Scale", min_diffusion_scale, 2.5, 0.0001, 0, 0.625 - min_diffusion_scale, 0.0001);
   let F_prop = new variationProperty(0.042, 0.001, "Feed", 0.01, 0.12, 0.0001, 0, 0.01, 0.0001);
   let K_prop = new variationProperty(0.06, 0.001, "Kill", 0.01, 0.12, 0.0001, 0, 0.01, 0.0001);
 
@@ -94,7 +94,7 @@ function Settings()
 
   environment_folder = gui.addFolder('Environment');
 
-  environment_folder.add(Settings, 'anisotropy', 0.2, 0.8, 0.01).onChange(() => {
+  environment_folder.add(Settings, 'anisotropy', 0.1, 0.9, 0.01).onChange(() => {
     reaction_diffusion_uniforms['anisotropy'].value = Settings.anisotropy;
   }).name('Anisotropy');
 
@@ -122,8 +122,8 @@ function Settings()
     material.uniforms.specular_color.value.fromArray(Settings.specular_color).divideScalar(255);
   }).name("Specular");
 
-  render_folder.add(Settings, 'bump', 0.1, 20, 0.1).onChange(() => {
-    material.uniforms.step.value = 1.0 / Settings.bump;
+  render_folder.add(Settings, 'bump', 0.1, 40, 0.1).onChange(() => {
+    material.uniforms.bump.value = Settings.bump;
   }).name('Bump');
 
   render_folder.add(Settings, 'shininess', 8, 256, 1).onChange(() => {

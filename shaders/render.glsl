@@ -9,15 +9,9 @@ Phong-illuminated results.
 ****************************************************/
 
 let render_vertex = `
-
-  varying vec2 texcoord;
-
   void main() 
   {
-    texcoord = uv;
-
-    vec4 modelViewPosition = modelViewMatrix * vec4(position, 1.0);
-    gl_Position = projectionMatrix * modelViewPosition;
+    gl_Position = vec4(position, 1.0);
   }
 
 `;
@@ -33,67 +27,35 @@ let render_fragment = `
 
   uniform float shininess;
 
-  // Defines the finite differences step size.
-  // smaller values => larger gradient => more bump
-  uniform float step;
+  uniform float bump;
 
   const float edge0 = 0.150;
   const float edge1 = 0.190;
   const vec3 ambient = vec3(0.1);
 
-  varying vec2 texcoord;
-
-  float height(float x_offset, float y_offset)
-  {
-    return texture2D(reaction_diffusion, texcoord + vec2(x_offset, y_offset) / resolution).g;
-  }
-
-  vec3 normal()
-  {
-    float
-                            h10 = height(0.0, 1.0),
-    h01 = height(-1.0, 0.0),                       h21 = height(1.0, 0.0),
-                            h12 = height(0.0,-1.0);
-
-    return normalize(cross(vec3(step, 0.0, h21 - h01),
-                           vec3(0.0, step, h10 - h12)));
-  }
+  #define H(x, y) texture2D(reaction_diffusion, (frag2sim * gl_FragCoord.xy + vec2(x, y)) / simulation_resolution).g
 
   void main() 
   {
-    vec3 normal = normal();
+    vec3 normal = normalize(vec3(H(-1, 0) - H(1, 0), H(0, -1) - H(0, 1), 2.0 / bump));
 
-    vec3 texel_pos = vec3(texcoord * resolution, 0.0);
-    vec3 light_dir = normalize(light_pos - texel_pos);
+    float h = H(0, 0);
+
+    vec3 pos = vec3(frag2sim * gl_FragCoord.xy, h * bump);
+    vec3 light_dir = normalize(light_pos - pos);
 
     float cos_theta = dot(normal, light_dir);
 
-    vec3 diffuse_color = background_color;
-
-    float h = height(0.0, 0.0);
-
-    vec3 specular = vec3(0.0);
+    // Transition between background and foreground (substance)
+    float foregroundness = smoothstep(edge0, edge1, h);
     
-    if(h > edge0)
-    {
       // Only interested in light reflected in z-directon since view direction always is [0,0,-1]
-      float reflect_z = light_dir.z - 2.0 * cos_theta * normal.z;
-      vec3 specular1 = pow(max(-reflect_z, 0.0), shininess) * specular_color;
-      if(h < edge1)
-      {
-        diffuse_color = mix(diffuse_color, substance_color, smoothstep(edge0, edge1, h));
-        specular = mix(specular, specular1, smoothstep(edge0, edge1, h));
-      }
-      else
-      {
-        diffuse_color = substance_color;
-        specular = specular1;
-      }
-    }
+    float reflect_z = light_dir.z - 2.0 * cos_theta * normal.z;
+    vec3 specular = pow(max(-reflect_z, 0.0), shininess) * foregroundness * specular_color;
     
-    vec3 diffuse = max(cos_theta, 0.0) * diffuse_color;
+    vec3 diffuse = max(cos_theta, 0.0) * mix(background_color, substance_color, foregroundness);
 
-    gl_FragColor = vec4((ambient + diffuse + specular), 1.0);
+    gl_FragColor = vec4(ambient + diffuse + specular, 1);
   }
 
 `;

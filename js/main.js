@@ -1,15 +1,18 @@
 let width = window.innerWidth;
 let height = window.innerHeight;
 
-let simulation_width = Math.round(width * window.devicePixelRatio / 2.5);
-let simulation_height = Math.round(height * window.devicePixelRatio / 2.5);
+let actual_width = Math.round(width * window.devicePixelRatio);
+let actual_height = Math.round(height * window.devicePixelRatio);
+
+let simulation_width = Math.round(actual_width / 2.5);
+let simulation_height = Math.round(actual_height / 2.5);
 
 Settings();
 
 let scene = new THREE.Scene();
 
-let camera = new THREE.OrthographicCamera(width / - 2, width / 2, height / 2, height / - 2, 1, 1000);
-camera.position.z = 5;
+let camera = new THREE.Camera();
+camera.position.z = 1;
 
 let renderer = new THREE.WebGLRenderer();
 renderer.setPixelRatio(window.devicePixelRatio);
@@ -33,13 +36,14 @@ let material = new THREE.ShaderMaterial
     "background_color": { value: new THREE.Vector3().fromArray(Settings.background_color).divideScalar(255) },
     "specular_color": { value: new THREE.Vector3().fromArray(Settings.specular_color).divideScalar(255) },
     "shininess": { value: Settings.shininess },
-    "step": { value: 1.0 / Settings.bump }
+    "bump": { value: Settings.bump }
   },
   defines: {
-    resolution: 'vec2(' + simulation_width + ', ' + simulation_height + ')'
+    frag2sim: 'vec2(' +  simulation_width / actual_width + ', ' + simulation_height / actual_height + ')',
+    simulation_resolution: 'vec2(' + simulation_width + ', ' + simulation_height + ')'
   }
 });
-scene.add(new THREE.Mesh(new THREE.PlaneGeometry(width, height, 1, 1), material));
+scene.add(new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 2), material));
 
 let gpu_compute = new THREE.GPUComputationRenderer(simulation_width, simulation_height, renderer);
 

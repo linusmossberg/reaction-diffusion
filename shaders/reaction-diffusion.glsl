@@ -25,35 +25,14 @@ uniform bool mouse_down;
 
 uniform bool reset;
 
-const vec2 D = vec2(1, 0.5);
-const float Dt = 1.0;
-
 #define p2(v) v * v
 #define PI 3.14159265358979323846
 
-// Sampling function with offset around current texel
-vec2 s(float x_offset, float y_offset)
-{
-  return texture2D(reaction_diffusion, (gl_FragCoord.xy + vec2(x_offset, y_offset)) / resolution).xy;
-}
+// Sampling function with offset around current fragment
+#define s(x, y) texture2D(reaction_diffusion, (gl_FragCoord.xy + vec2(x, y)) / resolution).xy
 
 /****************************************************
-Finite differences laplace operator with diagonals included based on 
-https://www.karlsims.com/rd.html
-****************************************************/
-const float diagonal = 0.05, adjacent = 0.2;
-vec2 laplace(vec2 center)
-{
-  vec2
-  v00 = s(-1.0, 1.0), v10 = s(0.0, 1.0), v20 = s(1.0, 1.0),
-  v01 = s(-1.0, 0.0),                    v21 = s(1.0, 0.0),
-  v02 = s(-1.0,-1.0), v12 = s(0.0,-1.0), v22 = s(1.0,-1.0);
-
-  return diagonal * (v00 + v20 + v02 + v22) + adjacent * (v10 + v01 + v21 + v12) - center;
-}
-
-/****************************************************
-Based on the anisotropic diffusion mask from the paper:
+Based on the anisotropic diffusion kernel from the paper:
 
 Reaction-Diffusion Textures - Andrew Witkin and Michael Kassy
 http://www.cs.cmu.edu/~jkh/462_s07/reaction_diffusion.pdf
@@ -69,46 +48,43 @@ a1 < 0.5 => more diffusion orthogonal to dir vector
 
 The total amount of diffusion is then controled later by the variable diffusion_scale.
 
-I've also changed the mask to make it the general case of the above laplace 
-operator which includes the diagonals, which makes them equivalent at a1 = 0.5.
-
+I've also changed the kernel to make it the general case of the 9-point Laplacian 
+with isotropic truncation error, and they are equivalent at a1 = 0.5.
 ****************************************************/
 vec2 anisotropicDiffusion(vec2 angles, float a1, vec2 center)
 {
   vec2
-  v00 = s(-1.0, 1.0), v10 = s(0.0, 1.0), v20 = s(1.0, 1.0),
-  v01 = s(-1.0, 0.0),                    v21 = s(1.0, 0.0),
-  v02 = s(-1.0,-1.0), v12 = s(0.0,-1.0), v22 = s(1.0,-1.0);
+  v00 = s(-1, 1), v10 = s(0, 1), v20 = s(1, 1),
+  v01 = s(-1, 0),                v21 = s(1, 0),
+  v02 = s(-1,-1), v12 = s(0,-1), v22 = s(1,-1);
 
   vec2 cos_t = cos(angles);
   vec2 sin_t = sin(angles);
 
-  float a2 = 1.0 - a1;
-
   vec2 cos2_t = p2(cos_t);
   vec2 sin2_t = p2(sin_t);
 
-  vec2 d = ((a2 - a1) * p2(cos_t * sin_t)) / 2.0;
-  vec2 h = (a1 * cos2_t + a2 * sin2_t) / 2.0 - diagonal;
-  vec2 v = (a2 * cos2_t + a1 * sin2_t) / 2.0 - diagonal;
+  float a2 = 1.0 - a1;
 
-  return (-d+diagonal) * (v00 + v22) +
-         ( d+diagonal) * (v20 + v02) +
-         h * (v01 + v21) +
-         v * (v10 + v12)
-         - center;
+  vec2 d = 4.0 * (a2 - a1) * p2(cos_t * sin_t);
+  vec2 h = 8.0 * (a1 * cos2_t + a2 * sin2_t);
+  vec2 v = 8.0 * (a2 * cos2_t + a1 * sin2_t);
+
+  return ((1.0 - d) * (v00 + v22) + (1.0 + d) * (v20 + v02) + h * (v01 + v21) + v * (v10 + v12) - 20.0 * center) / 6.0;
 }
 
 void main() 
 {
   vec4 env = texture2D(environment, (gl_FragCoord.xy / resolution).xy);
 
+  // Get spatially variable parameters from noise environment
   float F = feed + env[0] * feed_variation;
   float K = kill + env[1] * kill_variation;
   float DS = diffusion_scale + env[2] * diffusion_scale_variation;
+  vec2 angles = (1.0 + vec2(env[3], separate_fields ? env[0] : env[3])) * PI;
 
   // Old substance concentrations
-  vec2 old = s(0.0, 0.0);
+  vec2 old = s(0, 0);
 
   // Convert some of substance 0 to substance 1
   vec2 reaction = vec2(-1.0, 1.0) * old[0] * old[1] * old[1];
@@ -117,19 +93,17 @@ void main()
   vec2 dissipation = vec2(F * (1.0 - old[0]), -old[1] * (K + F));
 
   // Diffuse substances
-  vec2 angles = (1.0 + vec2(env[3], separate_fields ? env[0] : env[3])) * PI;
-  vec2 diffusion = anisotropicDiffusion(angles, anisotropy, old) * (D * DS);
+  vec2 diffusion = anisotropicDiffusion(angles, anisotropy, old) * DS * vec2(1.0, 0.5);
+
+  // Stable time step (spatially variable)
+  float dt = 1.0 / (4.0 * DS);
 
   // New substance concentrations
-  gl_FragColor.xy = old + (reaction + dissipation + diffusion) * (Dt / DS);
-  
+  gl_FragColor.xy = old + (reaction + dissipation + diffusion) * dt;
+
   if(mouse_down && gl_FragColor.y <= 0.2)
   {
-    float distance = length(gl_FragCoord.xy - mouse_pos);
-    if(distance <= 10.0)
-    {
-      gl_FragColor.y += (10.0 - distance)/56.0;
-    }
+    gl_FragColor.y += max((10.0 - distance(gl_FragCoord.xy, mouse_pos)), 0.0) / 56.0;
   }
 
   if(reset)
