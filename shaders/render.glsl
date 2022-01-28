@@ -29,9 +29,9 @@ let render_fragment = `
 
   uniform float bump;
 
-  const float edge0 = 0.150;
-  const float edge1 = 0.190;
-  const vec3 ambient = vec3(0.1);
+  #define edge0 0.15
+  #define edge1 0.19
+  #define ambient 0.1
 
   #define H(x, y) texture2D(reaction_diffusion, (frag2sim * gl_FragCoord.xy + vec2(x, y)) / simulation_resolution).g
 
@@ -44,18 +44,24 @@ let render_fragment = `
     vec3 pos = vec3(frag2sim * gl_FragCoord.xy, h * bump);
     vec3 light_dir = normalize(light_pos - pos);
 
-    float cos_theta = dot(normal, light_dir);
-
     // Transition between background and foreground (substance)
     float foregroundness = smoothstep(edge0, edge1, h);
-    
-      // Only interested in light reflected in z-directon since view direction always is [0,0,-1]
-    float reflect_z = light_dir.z - 2.0 * cos_theta * normal.z;
-    vec3 specular = pow(max(-reflect_z, 0.0), shininess) * foregroundness * specular_color;
-    
-    vec3 diffuse = max(cos_theta, 0.0) * mix(background_color, substance_color, foregroundness);
 
-    gl_FragColor = vec4(ambient + diffuse + specular, 1);
+    vec3 diffuse_color = mix(background_color, substance_color, foregroundness);
+
+    float cos_theta = dot(normal, light_dir);
+
+    if(cos_theta < 0.0)
+    {
+      gl_FragColor = vec4(ambient * diffuse_color, 1);
+    }
+    else
+    {
+      // View direction is always (0,0,1) due to orthographic projection
+      float reflect_z = max(2.0 * cos_theta * normal.z - light_dir.z, 0.0);
+      vec3 specular = pow(reflect_z, shininess) * foregroundness * specular_color;
+      gl_FragColor = vec4((ambient + cos_theta) * diffuse_color + specular, 1);
+    }
   }
 
 `;

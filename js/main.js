@@ -149,17 +149,17 @@ function createEnvironment(update = true)
     offsets[i] = (i + Math.random()) * 1000;
   }
 
+  let inv_scale = 1.0 / Settings.environment_noise_scale;
+
   let pixels = new Float32Array(simulation_width * simulation_height * 4);
-  let p = 0;
   for (let y = 0; y < simulation_height; y++)
   {
-    for (let x = 0; x < simulation_width; x++ )
+    for (let x = 0; x < simulation_width; x++)
     {
       for (let i = 0; i < 4; i++)
       {
-        pixels[p + i] = simplex.noise3d(x / Settings.environment_noise_scale, y / Settings.environment_noise_scale, offsets[i]);
+        pixels[(y * simulation_width + x) * 4 + i] = simplex.noise3d((x + 0.5) * inv_scale, (y + 0.5) * inv_scale, offsets[i]);
       }
-      p += 4;
     }
   }
 

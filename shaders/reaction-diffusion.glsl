@@ -28,6 +28,9 @@ uniform bool reset;
 #define p2(v) v * v
 #define PI 3.14159265358979323846
 
+// Brush radius
+#define R 10.0
+
 // Sampling function with offset around current fragment
 #define s(x, y) texture2D(reaction_diffusion, (gl_FragCoord.xy + vec2(x, y)) / resolution).xy
 
@@ -104,8 +107,7 @@ void main()
   // Add substance 1 by drawing
   if(mouse_down)
   {
-    const float R = 10.0;
-    gl_FragColor[1] += max(0.25 - old[1], 0.0) * max((R - distance(gl_FragCoord.xy, mouse_pos)), 0.0) / R;
+    gl_FragColor[1] += max(0.25 - old[1], 0.0) * max(R - distance(gl_FragCoord.xy, mouse_pos), 0.0) / R;
   }
 
   if(reset)
